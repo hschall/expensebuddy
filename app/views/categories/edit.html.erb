@@ -1,0 +1,13 @@
+<div class="container mt-5">
+  <h3>Editar Categoría</h3>
+
+  <%= form_with model: @category, local: true do |f| %>
+    <div class="mb-3">
+      <%= f.label :name, "Nombre de la Categoría" %>
+      <%= f.text_field :name, class: "form-control" %>
+    </div>
+
+    <%= f.submit "Actualizar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", categories_path, class: "btn btn-secondary ms-2" %>
+  <% end %>
+</div>

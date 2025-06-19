@@ -1,0 +1,15 @@
+# config/mexican_holidays.yaml
+---
+months:
+  1:
+    1:
+      - name: "Año Nuevo"
+  2:
+    5:
+      - name: "Día de la Constitución"
+  3:
+    21:
+      - name: "Natalicio de Benito Juárez"
+  5:
+    1:
+      - name: "Día del Trabajo"

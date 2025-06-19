@@ -1,0 +1,19 @@
+<div class="container mt-4" style="max-width: 720px;">
+  <h3 class="text-center">Subir Estado de Cuenta</h3>
+
+  <%= form_with url: import_path, multipart: true, local: true, data: { turbo: false } do |f| %>
+  <div class="mb-3">
+    <%= f.label :file, "Selecciona un archivo (.xlsx o .csv)", class: "form-label" %>
+    <%= f.file_field :file, class: "form-control" %>
+  </div>
+
+  <%= f.submit "Procesar Archivo", class: "btn-custom-primary-sm" %>
+<% end %>
+
+
+  <% if flash[:alert] %>
+    <div class="alert alert-danger mt-3">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+</div>

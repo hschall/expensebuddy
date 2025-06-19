@@ -1,0 +1,33 @@
+<!-- app/views/layouts/_alerts.html.erb -->
+<% if notice.present? %>
+  <turbo-frame id="alert">
+    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 shadow"
+         role="alert" style="z-index: 1055; min-width: 250px; max-width: 400px;">
+      <%= notice %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+  </turbo-frame>
+<% elsif alert.present? %>
+  <turbo-frame id="alert">
+    <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3 shadow"
+         role="alert" style="z-index: 1055; min-width: 250px; max-width: 400px;">
+      <%= alert %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+  </turbo-frame>
+<% else %>
+  <turbo-frame id="alert"></turbo-frame> <!-- Empty placeholder to allow Turbo updates -->
+<% end %>
+
+
+<script>
+document.addEventListener("turbo:load", () => {
+  const alert = document.querySelector("#alert .alert");
+  if (alert) {
+    setTimeout(() => {
+      const alertInstance = bootstrap.Alert.getOrCreateInstance(alert);
+      alertInstance.close();
+    }, 5000);
+  }
+});
+</script>

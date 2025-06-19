@@ -1,0 +1,43 @@
+<%= form_with model: transaction, local: true do |f| %>
+  <div class="mb-3">
+    <%= f.label :date, "Fecha" %>
+    <%= f.date_field :date, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, "Descripción" %>
+    <%= f.text_field :description, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :amount, "Monto" %>
+    <%= f.number_field :amount, step: 0.01, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :transaction_type, "Tipo de Transacción" %>
+    <%= f.select :transaction_type, Transaction.transaction_types.keys.map { |t| [t.titleize, t] }, {}, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :person, "Persona" %>
+    <%= f.text_field :person, class: "form-control", placeholder: "Nombre de la persona" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :company_code, "Información Adicional (empresa)" %>
+    <%= f.text_field :company_code, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :country, "País" %>
+    <%= f.text_field :country, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :category_id, "Categoría" %>
+    <%= f.collection_select :category_id, @categories, :id, :name, { prompt: "Selecciona una categoría" }, class: "form-select" %>
+  </div>
+
+  <%= f.submit class: "btn btn-success" %>
+<% end %>

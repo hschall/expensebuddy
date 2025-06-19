@@ -1,0 +1,42 @@
+  <!-- 💳 Summary Cards -->
+<div class="row text-left mb-4">
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Transacciones Totales</h6>
+        <h3 class="fw-bold"><%= transactions.count %></h3>
+        <small class="text-muted" style="font-size: 0.75rem;">Para el periodo seleccionado</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Monto Total</h6>
+        <h3 class="fw-bold"><%= number_to_currency(transactions.sum(&:amount)) %></h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Detalle por persona:</h6>
+        <h3 class="fw-bold" style="font-size: 0.75rem;"><% transactions.group_by(&:person).each do |person, txs| %>
+        <div><%= person %>: <%= number_to_currency(txs.sum(&:amount)) %></div>
+      <% end %></h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Detalle por tipo:</h6>
+        <h3 class="fw-bold" style="font-size: 1.3rem;">
+          <% transactions.group_by(&:transaction_type).each do |type, txs| %>
+        <div><%= type.titleize %>: <%= number_to_currency(txs.sum(&:amount)) %></div>
+      <% end %>
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>

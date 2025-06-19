@@ -1,0 +1,133 @@
+<div class="container mt-5">
+  <h3>Previsualización del Archivo</h3>
+
+  <% if @transactions_preview.present? || @balance_payments_preview.present? %>
+    <%= form_with url: save_imported_transactions_path, method: :post, data: { turbo: false }, local: true do %>
+      <%= hidden_field_tag :transactions, @transactions_preview.to_json %>
+      <%= hidden_field_tag :balance_payments, @balance_payments_preview.to_json %>
+
+      <% if @existing_cycle %>
+        <div class="alert alert-warning mt-3">
+          ⚠️ Se detectaron ciclos ya existentes en el sistema:
+          <ul>
+            <% @existing_cycles.each do |cycle| %>
+              <li><strong><%= cycle %></strong></li>
+            <% end %>
+          </ul>
+          Si continúas, todos los registros de esos ciclos serán eliminados y reemplazados con los datos del archivo.
+        </div>
+
+        <div class="form-check my-3">
+          <%= check_box_tag "confirm_overwrite", "1", false, class: "form-check-input", id: "confirm_overwrite_checkbox" %>
+          <%= label_tag "confirm_overwrite", "Confirmo que deseo reemplazar los datos de los ciclos existentes", class: "form-check-label" %>
+        </div>
+      <% end %>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <ul class="nav nav-tabs" id="previewTabs" role="tablist">
+          <% if @transactions_preview.present? %>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="tx-tab" data-bs-toggle="tab" data-bs-target="#tx" type="button" role="tab">Transacciones</button>
+            </li>
+          <% end %>
+          <% if @balance_payments_preview.present? %>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link <%= @transactions_preview.blank? ? 'active' : '' %>" id="bp-tab" data-bs-toggle="tab" data-bs-target="#bp" type="button" role="tab">Pagos / Reembolsos</button>
+            </li>
+          <% end %>
+        </ul>
+
+        <%= submit_tag "Guardar Todas", id: "guardar-btn", class: "btn btn-success mb-4", disabled: @existing_cycle %>
+      </div>
+
+      <div class="tab-content mt-3">
+        <% if @transactions_preview.present? %>
+          <div class="tab-pane fade show active" id="tx" role="tabpanel">
+            <h5>Transacciones</h5>
+            <div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+              <table class="table table-striped table-bordered-custom table-hover align-middle text-center mt-2">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Persona</th>
+                    <th>Monto</th>
+                    <th>Empresa</th>
+                    <th>País</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @transactions_preview.each do |tx| %>
+                    <tr>
+                      <td><%= tx[:date] %></td>
+                      <td><%= tx[:description] %></td>
+                      <td><%= tx[:person] %></td>
+                      <td><%= number_to_currency(tx[:amount]) %></td>
+                      <td><%= tx[:company_code] %></td>
+                      <td><%= tx[:country] %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @balance_payments_preview.present? %>
+          <div class="tab-pane fade <%= @transactions_preview.blank? ? 'show active' : '' %>" id="bp" role="tabpanel">
+            <h5>Pagos de Saldo / Reembolsos (Al estado de cuenta anterior)</h5>
+            <div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+              <table class="table table-striped table-hover align-middle text-center mt-2">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Persona</th>
+                    <th>Monto</th>
+                    <th>Categoría</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @balance_payments_preview.each do |bp| %>
+                    <tr>
+                      <td><%= bp[:date] %></td>
+                      <td><%= bp[:description] %></td>
+                      <td><%= bp[:person] %></td>
+                      <td><%= number_to_currency(bp[:amount]) %></td>
+                      <td><%= bp[:category] %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="alert alert-warning mt-3">
+      No se detectaron registros válidos en el archivo.
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const button = document.getElementById("guardar-btn");
+    const checkbox = document.getElementById("confirm_overwrite_checkbox");
+
+    if (form && button) {
+      form.addEventListener("submit", () => {
+        button.disabled = true;
+        button.innerText = "Guardando...";
+      });
+    }
+
+    if (checkbox && button) {
+      checkbox.addEventListener("change", () => {
+        button.disabled = !checkbox.checked;
+      });
+    }
+  });
+</script>

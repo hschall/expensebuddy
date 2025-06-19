@@ -1,0 +1,29 @@
+<div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+
+<table class="table table-sm table-hover table-borderless table-striped text-center align-middle mb-0">
+  <thead class="sticky-top">
+    <tr style="height: 60px;">
+      <th><%= check_box_tag "select_all", "", false, id: "select_all_checkbox" %></th>
+      <th>Fecha</th>
+      <th>Descripción</th>
+      <th>Monto</th>
+      <th>Persona</th>
+      <th>Categoría</th>
+      <th>País</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% balance_payments.each do |bp| %>
+      <tr style="height: 55px;">
+        <td><%= check_box_tag "balance_payment_ids[]", bp.id, false, class: "bp-checkbox" %></td>
+        <td><%= bp.date %></td>
+        <td><%= bp.description %></td>
+        <td><%= number_to_currency(bp.amount) %></td>
+        <td><%= bp.person %></td>
+        <td><%= bp.category %></td>
+        <td><%= bp.country %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

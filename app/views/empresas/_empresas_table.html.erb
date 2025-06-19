@@ -1,0 +1,45 @@
+<div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+  <div>
+    <table class="table table-borderless table-striped table-hover text-center align-middle">
+      <thead class="sticky-top">
+        <tr>
+          <!-- Updated ID for select all checkbox -->
+          <th><%= check_box_tag "select_all_empresas", "", false, id: "select_all_empresas_checkbox" %></th>
+          <th>RFC</th>
+          <th>Ejemplo Descripción</th>
+          <th>Categoría</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% empresas.each do |empresa| %>
+          <tr>
+            <td>
+              <%= check_box_tag "empresa_ids[]", empresa.id, false, class: "empresa-checkbox" %>
+            </td>
+            <td><%= empresa.identificador %></td>
+            <td><%= empresa.descripcion %></td>
+            <td>
+              <%= select_tag "empresas[#{empresa.id}][category_id]",
+                options_from_collection_for_select(Category.all, :id, :name, empresa.category_id),
+                class: "form-select form-select-sm" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ✅ Select All Script (matches Transacciones table behavior) -->
+<script>
+  document.addEventListener("turbo:load", () => {
+    const selectAll = document.getElementById("select_all_empresas_checkbox");
+    const checkboxes = document.querySelectorAll(".empresa-checkbox");
+
+    if (selectAll) {
+      selectAll.addEventListener("change", () => {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      });
+    }
+  });
+</script>

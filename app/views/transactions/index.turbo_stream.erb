@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "transactions_table" do %>
+  <%= render partial: "transactions/table", locals: { transactions: @transactions } %>
+<% end %>
+
+<%= turbo_stream.replace "transactions_dashboard" do %>
+  <%= render partial: "transactions/dashboard", locals: { transactions: @transactions } %>
+<% end %>

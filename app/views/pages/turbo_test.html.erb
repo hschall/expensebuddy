@@ -1,0 +1,13 @@
+<turbo-frame id="test_area">
+  <%= button_to "Click Me", turbo_test_path, method: :post, form: { data: { turbo_stream: true } }, class: "btn btn-danger" %>
+</turbo-frame>
+
+
+
+<script type="module">
+  document.querySelector("button").addEventListener("click", () => {
+    fetch("/turbo_test", {
+      headers: { Accept: "text/vnd.turbo-stream.html" }
+    });
+  });
+</script>

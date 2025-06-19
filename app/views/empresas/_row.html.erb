@@ -1,0 +1,18 @@
+<turbo-frame id="empresa_<%= empresa.id %>">
+  <tr>
+    <td><%= empresa.identificador %></td>
+    <td><%= empresa.descripcion %></td>
+    <td>
+      <%= form_with model: empresa,
+                    url: update_inline_empresa_path(empresa),
+                    method: :patch,
+                    data: { turbo_frame: "empresa_#{empresa.id}" } do |f| %>
+        <%= f.select :category_id,
+                     Category.all.map { |c| [c.name, c.id] },
+                     { selected: empresa.category_id },
+                     class: "form-select form-select-sm",
+                     onchange: "this.form.submit()" %>
+      <% end %>
+    </td>
+  </tr>
+</turbo-frame>

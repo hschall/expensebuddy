@@ -1,0 +1,58 @@
+<div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+
+<div>
+<table class="table table-sm table-hover table-borderless table-striped text-center align-middle mb-0">
+  <thead class="sticky-top">
+    <tr style="height: 60px;">
+      <th><%= check_box_tag "select_all", "", false, id: "select_all_checkbox" %></th>
+      <th>Fecha</th>
+      <th>Descripción</th>
+      <th>Monto</th>
+      <th>Persona</th>
+      <th>Categoría</th>
+      <th>Empresa</th>
+      <th>País</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |tx| %>
+      <tr style="height: 55px;">
+        <td><%= check_box_tag "transaction_ids[]", tx.id, false, class: "transaction-checkbox" %></td>
+        <td><%= tx.date %></td>
+        <td><%= tx.description %></td>
+        <td><%= number_to_currency(tx.amount) %></td>
+
+        <td>
+          <%= select_tag "transactions[#{tx.id}][person]",
+              options_for_select(Transaction.distinct.pluck(:person).compact.sort, tx.person),
+              class: "form-select form-select-sm", style: "font-size: 0.75rem;"  %>
+        </td>
+
+        <td>
+          <%= select_tag "transactions[#{tx.id}][category_id]",
+              options_from_collection_for_select(Category.all, :id, :name, tx.category_id),
+              class: "form-select form-select-sm", style: "font-size: 0.75rem;" %>
+        </td>
+
+        <td><%= tx.company_code %></td>
+        <td><%= tx.country %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+<script>
+  document.addEventListener("turbo:load", () => {
+  const selectAll = document.getElementById("select_all_checkbox");
+  const checkboxes = document.querySelectorAll(".transaction-checkbox");
+
+  if (selectAll) {
+    selectAll.addEventListener("change", () => {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    });
+  }
+});
+</script>

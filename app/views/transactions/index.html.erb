@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <h3>Transacciones</h3>
+
+  <!-- Periodo de tarjeta filter (auto-applies) -->
+  <div class="mb-2 col-3">
+    <%= select_tag :cycle_month,
+      options_for_select((0..11).map { |i|
+        date = Date.today.beginning_of_month - i.months
+        [I18n.l(date, format: "%B %Y", locale: :es).capitalize, date.strftime("%Y-%m")]
+      }, selected: params[:cycle_month]),
+      prompt: "Periodo de tarjeta",
+      class: "form-select",
+      data: { controller: "filters", action: "change->filters#applyCycleMonth" } %>
+  </div>
+
+  <!-- Filters row -->
+  <div data-controller="filters" class="row g-2 mb-3 align-items-end">
+    <div class="col">
+      <%= select_tag :person,
+          options_for_select(Transaction.distinct.pluck(:person).compact.sort, selected: params[:person]),
+          prompt: "Persona",
+          class: "form-select" %>
+    </div>
+    <div class="col">
+      <%= select_tag :category,
+          options_from_collection_for_select(Category.all, :id, :name, selected: params[:category_id]),
+          prompt: "Categoría",
+          class: "form-select" %>
+    </div>
+    <div class="col">
+      <%= text_field_tag :description, params[:description], placeholder: "Buscar descripción...", class: "form-control" %>
+    </div>
+    <div class="col-auto">
+      <button class="btn-custom-primary-sm" data-action="filters#applyManual">Filtrar</button>
+      <button class="btn-custom-primary-sm" data-action="filters#reset">Resetear</button>
+    </div>
+  </div>
+
+  <!-- 🧾 DASHBOARD -->
+  <%= turbo_frame_tag "transactions_dashboard" do %>
+    <%= render partial: "transactions/dashboard", locals: { transactions: @transactions } %>
+  <% end %>
+
+  <!-- ✅ SINGLE FORM FOR BOTH ACTIONS -->
+  <%= form_with url: "", method: :post, id: "transactions_form", data: { turbo: false } do %>
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+    <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap">
+      <%= link_to "Nueva Transacción", new_transaction_path, class: "btn-custom-primary-sm me-2" %>
+      <%= submit_tag "Guardar cambios", class: "btn-custom-save-sm me-2", data: { action: "guardar" } %>
+      <%= submit_tag "Eliminar seleccionadas", class: "btn-custom-danger-sm", data: { action: "eliminar" } %>
+    </div>
+
+    <%= turbo_frame_tag "transactions_table" do %>
+      <%= render partial: "transactions/table", locals: { transactions: @transactions, with_checkboxes: true } %>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- ✅ JS to set form action based on clicked submit -->
+<script>
+  document.addEventListener("turbo:load", () => {
+    const form = document.getElementById("transactions_form");
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+      const clickedButton = document.activeElement;
+      const actionType = clickedButton?.dataset?.action;
+
+      if (actionType === "guardar") {
+        form.action = "/transactions/save_all";
+        form.method = "post";
+      } else if (actionType === "eliminar") {
+        form.action = "/transactions/delete_selected";
+        form.method = "post"; // Simulate DELETE
+        const methodInput = document.createElement("input");
+        methodInput.setAttribute("type", "hidden");
+        methodInput.setAttribute("name", "_method");
+        methodInput.setAttribute("value", "delete");
+        form.appendChild(methodInput);
+      } else {
+        e.preventDefault();
+        alert("No se pudo determinar la acción del formulario.");
+      }
+    });
+
+    // ✅ Select all checkbox behavior
+    const selectAll = document.getElementById("select_all_checkbox");
+    const checkboxes = document.querySelectorAll(".transaction-checkbox");
+
+    if (selectAll) {
+      selectAll.addEventListener("change", () => {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      });
+    }
+  });
+</script>

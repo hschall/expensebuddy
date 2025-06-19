@@ -1,0 +1,53 @@
+<div class="sidebar-custom">
+  <!-- User Avatar -->
+  <div class="user-section">
+  <%= image_tag "Picture1.svg", class: "avatar-circle", alt: "User Avatar" %>
+  <div class="user-info">
+    <div class="user-name">Hans S</div>
+    <div style="font-size: 0.75rem;" class="user-email">hans@expensebuddy.mx</div>
+  </div>
+</div>
+<div class="sidebar-divider"></div>
+
+
+<div class="sidebar-links">
+  <%= link_to dashboard_path, class: "sidebar-link #{'active' if current_page?(dashboard_path)}" do %>
+    <%= image_tag "dashboard.svg", class: "sidebar-icon" %> Dashboard
+  <% end %>
+  <%= link_to transactions_path, class: "sidebar-link #{'active' if current_page?(transactions_path)}", data: { turbo: false } do %>
+  <%= image_tag "Transacciones.svg", class: "sidebar-icon" %> Transacciones
+<% end %>
+
+  <%= link_to balance_payments_path, class: "sidebar-link #{'active' if current_page?(balance_payments_path)}" do %>
+    <%= image_tag "Pagos.svg", class: "sidebar-icon" %> Pagos y reembolsos
+  <% end %>
+  <%= link_to categories_path, class: "sidebar-link #{'active' if current_page?(categories_path)}" do %>
+    <%= image_tag "Categorias.svg", class: "sidebar-icon" %> Categorías
+  <% end %>
+  <%= link_to empresas_path, class: "sidebar-link #{'active' if current_page?(empresas_path)}" do %>
+    <%= image_tag "Empresas.svg", class: "sidebar-icon" %> Empresas
+  <% end %>
+  <%= link_to import_path, class: "sidebar-link #{'active' if current_page?(import_path)}" do %>
+    <%= image_tag "Importar.svg", class: "sidebar-icon" %> Importar EDC
+  <% end %>
+  <%= link_to edit_settings_path, class: "sidebar-link #{'active' if current_page?(edit_settings_path)}" do %>
+    <%= image_tag "Ajustes.svg", class: "sidebar-icon" %> Ajustes
+  <% end %>
+</div>
+
+
+  <div style="margin-top: auto; padding-top: 20px; width: 13%; border-top: 1px solid #ccc;">
+  <div style="font-size: 0.9rem; color: #555;">
+    <strong>ExpenseBuddy.mx</strong><br>
+  </div>
+  <button style="
+    margin-top: 10px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    border: 1px solid #ccc;
+    background: #f1f1f1;
+    border-radius: 6px;
+  ">Cerrar Sesion</button>
+</div>
+
+</div>

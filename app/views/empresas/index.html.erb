@@ -1,0 +1,55 @@
+<h3>Empresas</h3>
+
+<!-- 🔘 Top Actions -->
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <%= button_to "Importar nuevas empresas desde transacciones", import_from_transactions_empresas_path,
+                method: :post, class: "btn-custom-action-sm" %>
+
+  <%= button_to "Actualizar categorías en base de datos", update_all_transaction_categories_empresas_path,
+                method: :post, class: "btn-custom-action-sm btn-sm" %>
+</div>
+
+
+<!-- 🔍 Filter Form -->
+<%= form_with url: empresas_path, method: :get, local: true, class: "mb-4 row g-2 align-items-end" do %>
+  <div class="col-auto">
+    <%= label_tag :identificador_filter, "RFC", class: "form-label" %>
+    <%= select_tag :identificador_filter,
+          options_for_select([["Todos", ""], ["Con RFC", "con"], ["Sin RFC", "sin"]],
+          selected: params[:identificador_filter]),
+          class: "form-select form-select-sm" %>
+  </div>
+
+  <div class="col-auto">
+    <%= label_tag :categoria_filter, "Categoría", class: "form-label" %>
+    <%= select_tag :categoria_filter,
+          options_for_select([["Todas", ""], ["Sin categoría", "sin"]] + Category.order(:name).pluck(:name).map { |c| [c, c] },
+          selected: params[:categoria_filter]),
+          class: "form-select form-select-sm" %>
+  </div>
+
+  <div class="col-auto">
+    <%= label_tag :search, "Buscar descripción", class: "form-label" %>
+    <%= text_field_tag :search, params[:search], placeholder: "Ej: OXXO, Soriana...", class: "form-control form-control-sm" %>
+  </div>
+
+  <div class="col-auto d-flex gap-2">
+    <%= submit_tag "Filtrar", class: "btn-custom-primary-sm" %>
+
+    <% if params[:identificador_filter].present? || params[:categoria_filter].present? || params[:search].present? %>
+      <%= link_to "Quitar filtros", empresas_path, class: "btn-custom-primary-sm btn-sm" %>
+    <% end %>
+  </div>
+<% end %>
+
+
+
+<!-- 🧾 Empresa Table -->
+<%= form_with url: delete_selected_empresas_path, method: :delete, local: true do %>
+  <div class="d-flex justify-content-start mb-2">
+    <%= submit_tag "Guardar cambios", formaction: save_all_empresas_path, formmethod: :post, class: "btn-custom-save-sm me-2" %>
+    <%= submit_tag "Eliminar seleccionadas", class: "btn-custom-danger-sm", data: { turbo_confirm: "¿Eliminar las empresas seleccionadas?" } %>
+  </div>
+
+  <%= render partial: "empresas/empresas_table", locals: { empresas: @empresas } %>
+<% end %>
