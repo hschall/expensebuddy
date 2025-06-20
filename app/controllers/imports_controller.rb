@@ -8,7 +8,7 @@ class ImportsController < ApplicationController
   end
 
   begin
-    parser = StatementParser.new(params[:file])
+    parser = StatementParser.new(params[:file], current_user)
     result = parser.parse
 
     @transactions_preview = result[:transactions]

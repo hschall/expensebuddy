@@ -1,0 +1,36 @@
+---
+months:
+  1:
+    - name: "Año Nuevo"
+      regions: [mx]
+      mday: 1
+  2:
+    - name: "Día de la Constitución"
+      regions: [mx]
+      week: 1
+      wday: 1
+  3:
+    - name: "Natalicio de Benito Juárez"
+      regions: [mx]
+      week: 3
+      wday: 1
+  5:
+    - name: "Día del Trabajo"
+      regions: [mx]
+      mday: 1
+    - name: "Batalla de Puebla"
+      regions: [mx]
+      mday: 5
+  9:
+    - name: "Día de la Independencia"
+      regions: [mx]
+      mday: 16
+  11:
+    - name: "Día de la Revolución"
+      regions: [mx]
+      week: 3
+      wday: 1
+  12:
+    - name: "Navidad"
+      regions: [mx]
+      mday: 25
