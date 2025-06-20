@@ -54,6 +54,8 @@
     background: #f1f1f1;
     border-radius: 6px;
   "><%= link_to "Cerrar Sesion", destroy_user_session_path, data: { turbo_method: :delete }, class:'nav-link' %></button>
+  <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "btn btn-outline-danger btn-sm" %>
+
 </div>
 
 </div>
