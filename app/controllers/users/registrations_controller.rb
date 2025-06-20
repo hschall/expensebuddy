@@ -5,6 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if resource.save
       yield resource if block_given?
       sign_up(resource_name, resource)
+      sign_in(resource) unless user_signed_in?
 
 
       # ✅ Redirect using Devise hook

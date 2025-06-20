@@ -42,13 +42,21 @@
   <% end %>
 
   <!-- 🧹 Opciones de limpieza -->
-  <hr class="my-4">
+<hr class="my-4">
 
-  <div class="d-flex flex-column gap-2">
+<div class="d-flex flex-column gap-2">
+  <% if @setting.cycle_end_day.present? %>
     <%= button_to "Eliminar todos los registros (Transacciones y Pagos de Saldo)",
       delete_all_records_path,
       method: :delete,
       class: "btn-custom-danger-sm",
       onclick: "return confirm('¿Estás seguro que deseas eliminar TODAS las transacciones y pagos de saldo?')" %>
-  </div>
+  <% else %>
+    <%= button_tag "Eliminar todos los registros (Transacciones y Pagos de Saldo)",
+      class: "btn-custom-danger-sm-disabled",
+      disabled: true,
+      title: "Debes registrar primero el día de corte de tarjeta" %>
+  <% end %>
+</div>
+
 </div>

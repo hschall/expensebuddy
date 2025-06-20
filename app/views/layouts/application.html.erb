@@ -31,9 +31,11 @@
       <!-- Main App Content (not for Devise pages) -->
       <div class="main-content">
         <br>
-        <% unless controller_name == "imports" && action_name == "new" %>
+        
+        <% unless (controller_name == "imports" && action_name == "new") || (controller_name == "settings" && action_name == "edit") %>
           <%= render "layouts/alerts" %>
         <% end %>
+
         <%= yield %>
       </div>
     <% else %>

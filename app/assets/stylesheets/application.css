@@ -208,3 +208,15 @@
   color: #fff;
 }
 
+.btn-custom-danger-sm-disabled {
+  background-color: #ffb6c4;       /* Bootstrap danger red */
+  color: white;
+  font-size: 0.85rem;              /* Small text */
+  font-weight: 500;
+  padding: 4px 12px;
+  border: none;
+  text-decoration: none !important;  /* ✅ removes underline */
+  text-align: middle;
+  border-radius: 6px;              /* Rounded edges */
+  transition: background-color 0.2s ease;
+}
