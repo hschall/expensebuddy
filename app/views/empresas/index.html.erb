@@ -21,12 +21,19 @@
   </div>
 
   <div class="col-auto">
-    <%= label_tag :categoria_filter, "Categoría", class: "form-label" %>
-    <%= select_tag :categoria_filter,
-          options_for_select([["Todas", ""], ["Sin categoría", "sin"]] + Category.order(:name).pluck(:name).map { |c| [c, c] },
-          selected: params[:categoria_filter]),
-          class: "form-select form-select-sm" %>
-  </div>
+  <%= label_tag :categoria_filter, "Categoría", class: "form-label" %>
+  <%= select_tag :categoria_filter,
+        options_for_select(
+          [["Todas", ""], ["Sin categoría", "sin"]] +
+          current_user.categories
+                      .where.not(name: "Sin categoría")
+                      .order(:name)
+                      .pluck(:name)
+                      .map { |c| [c, c] },
+          selected: params[:categoria_filter]
+        ),
+        class: "form-select form-select-sm" %>
+</div>
 
   <div class="col-auto">
     <%= label_tag :search, "Buscar descripción", class: "form-label" %>

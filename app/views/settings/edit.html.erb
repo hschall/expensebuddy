@@ -1,8 +1,34 @@
+<% if flash[:alert] %>
+  <div class="alert alert-warning"><%= flash[:alert] %></div>
+<% end %>
+
+
 <div class="container mt-4" style="max-width: 720px;">
   <h3 class="text-center mb-4">Configuración del Sistema</h3>
 
-  <!-- 🛠️ Ciclo de Tarjeta -->
   <%= form_with(model: @setting, url: settings_path, method: :patch, local: true) do |form| %>
+
+    <!-- 🖼️ Avatar -->
+    <div class="mb-3">
+      <label class="form-label fw-bold">Selecciona un avatar</label>
+      <div class="d-flex flex-wrap gap-3">
+        <% Dir.glob(Rails.root.join("app/assets/images/avatars/*")).each do |path| %>
+          <% filename = File.basename(path) %>
+          <label style="cursor: pointer;">
+            <%= form.radio_button :avatar_filename, filename, checked: @setting.avatar_filename == filename %>
+            <%= image_tag "avatars/#{filename}", style: "width: 64px; height: 64px; border-radius: 50%; border: 2px solid #ccc; margin-left: 5px;" %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 👤 Nombre -->
+    <div class="mb-3">
+      <%= form.label :nombre, "Nombre" %>
+      <%= form.text_field :nombre, class: "form-control", placeholder: "Ej. Andres Manuel" %>
+    </div>
+
+    <!-- 🛠️ Ciclo de Tarjeta -->
     <div class="mb-3">
       <%= form.label :cycle_end_day, "Día de corte de tarjeta", class: "form-label fw-bold" %>
       <%= form.number_field :cycle_end_day, in: 1..31, class: "form-control", required: true %>
@@ -12,24 +38,13 @@
     <div class="mt-3">
       <%= form.submit "Guardar Configuración", class: "btn-custom-primary-sm" %>
     </div>
+
   <% end %>
 
   <!-- 🧹 Opciones de limpieza -->
   <hr class="my-4">
 
   <div class="d-flex flex-column gap-2">
-    <%#= button_to "Eliminar todas las transacciones",
-      delete_all_transactions_path,
-      method: :delete,
-      class: "btn-custom-danger-sm",
-      onclick: "return confirm('¿Seguro que desea eliminar todos los registros?')" %>
-
-    <%#= button_to "Eliminar todos los pagos de saldo",
-      delete_all_balance_payments_path,
-      method: :delete,
-      data: { turbo: false, confirm: "¿Seguro que desea eliminar todos los pagos de saldo?" },
-      class: "btn-custom-danger-sm" %>
-
     <%= button_to "Eliminar todos los registros (Transacciones y Pagos de Saldo)",
       delete_all_records_path,
       method: :delete,

@@ -10,7 +10,8 @@
 
 <!-- Greeting and Divider -->
 <div class="dashboard-header">
-  <div class="greeting"><%= "#{saludo}, Hans!" %></div>
+  <% user_name = current_user.setting&.nombre.presence || current_user.email.split('@').first.capitalize %>
+<div class="greeting"><%= "#{saludo}, #{user_name}!" %></div>
   <div class="greeting-date">
     <%= I18n.l(Date.today, format: :custom, locale: :es) %>
   </div>
@@ -34,8 +35,8 @@
 
     <div class="col-md-3">
         <%= select_tag :person,
-         options_for_select(
-            ["Todos"] + Transaction.distinct.pluck(:person).compact.uniq,
+          options_for_select(
+            ["Todos"] + current_user.transactions.distinct.pluck(:person).compact.uniq,
             selected: params[:person].presence || "Todos"
           ),
           class: "form-select",

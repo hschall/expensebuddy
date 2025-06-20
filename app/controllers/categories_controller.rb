@@ -1,22 +1,13 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[edit update destroy]
+  before_action :set_category, only: [:edit, :update, :destroy]
 
   def index
-    @categories = Category.order(:name)
-    @category = Category.new
+    @category = current_user.categories.new
+    @categories = current_user.categories.order(:name)
   end
 
-  def create
-    @category = Category.new(category_params)
-    if @category.save
-      redirect_to categories_path, notice: "Categoría creada exitosamente."
-    else
-      @categories = Category.all
-      render :index
-    end
+  def edit
   end
-
-  def edit; end
 
   def update
     if @category.update(category_params)
@@ -27,21 +18,31 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-  category = Category.find(params[:id])
+  @category = current_user.categories.find(params[:id])
 
-  if Transaction.exists?(category_id: category.id) || Empresa.exists?(category_id: category.id)
-    redirect_to categories_path, notice: "No se puede eliminar la categoría porque está en uso."
+  if @category.transactions.exists?
+    redirect_to categories_path, alert: "No puedes eliminar una categoría que está asociada a transacciones."
   else
-    category.destroy
-    redirect_to categories_path, notice: "Categoría eliminada."
+    @category.destroy
+    redirect_to categories_path, notice: "Categoría eliminada correctamente."
   end
 end
 
 
+  def create
+    @category = current_user.categories.new(category_params)
+    if @category.save
+      redirect_to categories_path, notice: "Categoría creada exitosamente."
+    else
+      @categories = current_user.categories.order(:name)
+      render :index
+    end
+  end
+
   private
 
   def set_category
-    @category = Category.find(params[:id])
+    @category = current_user.categories.find(params[:id])
   end
 
   def category_params

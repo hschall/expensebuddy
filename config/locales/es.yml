@@ -2,10 +2,25 @@ es:
   date:
     formats:
       default: "%d/%m/%Y"
-      short: "%b %d"
-      long: "%A, %e de %B de %Y"
-      custom: "%A, %e de %B del %Y"
-    day_names: [Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
-    abbr_day_names: [Dom, Lun, Mar, Mié, Jue, Vie, Sáb]
-    month_names: [~, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre]
-    abbr_month_names: [~, Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic]
+      short: "%-d %b"
+      long: "%-d de %B de %Y"
+      custom: "%A, %-d de %B de %Y"
+    day_names: ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"]
+    abbr_day_names: ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"]
+    month_names: [~, "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    abbr_month_names: [~, "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+
+  activerecord:
+    models: {}
+    attributes: {}
+    errors:
+      messages:
+        record_invalid: "La validación falló: %{errors}"
+
+  activerecord:
+    errors:
+      models:
+        empresa:
+          attributes:
+            identificador:
+              taken: "ya ha sido registrado"

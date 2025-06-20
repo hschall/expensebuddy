@@ -20,7 +20,7 @@
             <td><%= empresa.descripcion %></td>
             <td>
               <%= select_tag "empresas[#{empresa.id}][category_id]",
-                options_from_collection_for_select(Category.all, :id, :name, empresa.category_id),
+                options_from_collection_for_select(current_user.categories.order(:name), :id, :name, empresa.category_id),
                 class: "form-select form-select-sm" %>
             </td>
           </tr>

@@ -17,6 +17,7 @@ gem "groupdate"
 gem "chartkick"
 gem "digest"
 gem "holidays"
+gem 'devise', '~> 4.9', '>= 4.9.4'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: white; }
+
+    .left-panel {
+      position: relative;
+      background: linear-gradient(to bottom, #F4F4F2, #F4F4F2);
+      color: black;
+      padding: 3rem;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .right-panel { background: white; padding: 3rem; }
+
+    .form-control:focus { box-shadow: none; border-color: #2ca4e2; }
+
+    .btn-primary {
+      background: linear-gradient(to right, #00a2b0, #00a2b0);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(to right, #008b97, #008b97);
+    }
+
+    .form-label { font-weight: 500; }
+    .auth-card { max-width: 450px; margin: auto; }
+
+    /* Floating SVG animation styles */
+    .floating-icons {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .floating-icon {
+      position: absolute;
+      width: 40px;
+      opacity: 0.4;
+      animation: float-diagonal 10s linear infinite;
+    }
+
+    .icon1 { left: 0; bottom: 0; animation-delay: 0s; }
+    .icon2 { left: 40px; bottom: 20px; animation-delay: 3s; }
+    .icon3 { left: 80px; bottom: 10px; animation-delay: 6s; }
+
+    @keyframes float-diagonal {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0.4;
+      }
+      50% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translate(300px, -400px);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d-flex">
+    <!-- Left Side -->
+    <div class="left-panel d-none d-md-flex flex-column justify-content-center align-items-center w-50">
+      <h1 class="display-6 fw-bold">ExpenseBuddy</h1>
+      <h1 class="text-muted mb-3">(Beta)</h1>
+      <p class="lead">Inicia sesión en tu cuenta</p>
+      <p>www.expensebuddy.mx</p>
+
+      <!-- Floating icons -->
+      <div class="floating-icons">
+        <%= image_tag("money.svg", class: "floating-icon icon1") %>
+        <%= image_tag("money.svg", class: "floating-icon icon2") %>
+        <%= image_tag("money.svg", class: "floating-icon icon3") %>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="right-panel d-flex flex-column justify-content-center align-items-center w-100 w-md-50">
+      <div class="auth-card w-100">
+        <h4>Hola!</h4>
+        <h5><strong>Inicia sesión</strong> en tu cuenta</h5>
+
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+          <div class="mb-3">
+            <%= f.label :email, "Correo electrónico", class: "form-label" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :password, "Contraseña", class: "form-label" %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
+          </div>
+
+          <% if devise_mapping.rememberable? %>
+            <div class="form-check mb-3">
+              <%= f.check_box :remember_me, class: "form-check-input" %>
+              <%= f.label :remember_me, "Recordarme", class: "form-check-label" %>
+            </div>
+          <% end %>
+
+          <div class="mb-3 d-flex justify-content-between">
+            <span></span>
+            <%= link_to "¿Olvidaste tu contraseña?", new_password_path(resource_name), class: "text-decoration-none text-dark" %>
+          </div>
+
+          <%= f.submit "INGRESAR", class: "btn btn-primary w-100" %>
+        <% end %>
+
+        <div class="text-center mt-3">
+          <%= link_to "Crear cuenta", new_registration_path(resource_name), class: "text-decoration-none text-dark" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

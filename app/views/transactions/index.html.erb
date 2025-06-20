@@ -17,15 +17,17 @@
   <div data-controller="filters" class="row g-2 mb-3 align-items-end">
     <div class="col">
       <%= select_tag :person,
-          options_for_select(Transaction.distinct.pluck(:person).compact.sort, selected: params[:person]),
-          prompt: "Persona",
-          class: "form-select" %>
+  options_for_select(current_user.transactions.distinct.pluck(:person).compact.sort, selected: params[:person]),
+  prompt: "Persona",
+  class: "form-select" %>
+
     </div>
     <div class="col">
-      <%= select_tag :category,
-          options_from_collection_for_select(Category.all, :id, :name, selected: params[:category_id]),
-          prompt: "Categoría",
-          class: "form-select" %>
+      <%= select_tag :category_id,
+    options_from_collection_for_select(current_user.categories.order(:name), :id, :name, selected: params[:category_id]),
+    prompt: "Categoría",
+    class: "form-select" %>
+
     </div>
     <div class="col">
       <%= text_field_tag :description, params[:description], placeholder: "Buscar descripción...", class: "form-control" %>

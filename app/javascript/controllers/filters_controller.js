@@ -11,7 +11,7 @@ export default class extends Controller {
 
   applyManual() {
     const person = document.querySelector("select[name='person']").value
-    const category = document.querySelector("select[name='category']").value
+    const category = document.querySelector("select[name='category_id']").value
     const description = document.querySelector("input[name='description']").value
     const cycle_month = document.querySelector("select[name='cycle_month']").value
 
@@ -26,7 +26,7 @@ export default class extends Controller {
 
   reset() {
     document.querySelector("select[name='person']").value = ""
-    document.querySelector("select[name='category']").value = ""
+    document.querySelector("select[name='category_id']").value = ""
     document.querySelector("input[name='description']").value = ""
     document.querySelector("select[name='cycle_month']").value = ""
 

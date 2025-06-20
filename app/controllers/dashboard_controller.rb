@@ -2,27 +2,25 @@ class DashboardController < ApplicationController
   def index
     # Default cycle month logic
     if params[:cycle_month].blank?
-  latest_date = Transaction.maximum(:date)
+      latest_date = current_user.transactions.maximum(:date)
 
-  if latest_date.present?
-    cycle_end_day = Setting.cycle_end_day
-    if latest_date.day > cycle_end_day
-      cycle_start = latest_date.change(day: cycle_end_day + 1)
-    else
-      cycle_start = (latest_date - 1.month).change(day: cycle_end_day + 1)
+      if latest_date.present?
+        cycle_end_day = current_user.setting&.cycle_end_day || 6
+        if latest_date.day > cycle_end_day
+          cycle_start = latest_date.change(day: cycle_end_day + 1)
+        else
+          cycle_start = (latest_date - 1.month).change(day: cycle_end_day + 1)
+        end
+
+        params[:cycle_month] = cycle_start.strftime("%Y-%m")
+      else
+        cycle_start = Date.today.change(day: 7)
+        params[:cycle_month] = cycle_start.strftime("%Y-%m")
+      end
     end
 
-    params[:cycle_month] = cycle_start.strftime("%Y-%m")
-  else
-    # Fallback to current month if no transactions exist
-    cycle_start = Date.today.change(day: 7)
-    params[:cycle_month] = cycle_start.strftime("%Y-%m")
-  end
-end
-
-
     # Base scope
-    transactions = Transaction.all
+    transactions = current_user.transactions
     if params[:cycle_month].present?
       transactions = transactions.where(cycle_month: params[:cycle_month])
     end
@@ -33,18 +31,15 @@ end
     transactions = transactions.where(category_id: params[:category_id]) if params[:category_id].present?
 
     if params[:cycle_month].present?
-  year, month = params[:cycle_month].split("-").map(&:to_i)
-  cycle_end_day = Setting.cycle_end_day
+      year, month = params[:cycle_month].split("-").map(&:to_i)
+      cycle_end_day = current_user.setting&.cycle_end_day || 6
 
-  @cycle_end_date = Date.new(year, month, cycle_end_day)
-  @cycle_start_date = (@cycle_end_date + 1.month).change(day: cycle_end_day + 1)
+      @cycle_end_date = Date.new(year, month, cycle_end_day)
+      @cycle_start_date = (@cycle_end_date + 1.month).change(day: cycle_end_day + 1)
+      @payment_due_date = Holiday.adjust_to_business_day(@cycle_end_date + 13)
 
-  @payment_due_date = Holiday.adjust_to_business_day(@cycle_end_date + 13)
-
-  # Format cycle period for display in Spanish
-  @formatted_cycle_range = "Para el periodo del #{@cycle_start_date.day} de #{I18n.l(@cycle_end_date, format: '%B', locale: :es).capitalize} al #{@cycle_end_date.day} de #{I18n.l(@cycle_start_date, format: '%B', locale: :es).capitalize}"
-end
-
+      @formatted_cycle_range = "Para el periodo del #{@cycle_start_date.day} de #{I18n.l(@cycle_end_date, format: '%B', locale: :es).capitalize} al #{@cycle_end_date.day} de #{I18n.l(@cycle_start_date, format: '%B', locale: :es).capitalize}"
+    end
 
     @transactions = transactions
 
@@ -58,13 +53,11 @@ end
     @total_balance = @total_positive_amount + @total_negative_amount
 
     # === Category Filter for chart + table ===
-    filtered_categories =
-      if params[:category_filter].present?
-        Array(params[:category_filter])
-      else
-        Category.pluck(:name)
-      end
-
+    filtered_categories = if params[:category_filter].present?
+                            Array(params[:category_filter])
+                          else
+                            Category.pluck(:name)
+                          end
     @selected_categories = filtered_categories
 
     @category_distribution = @transactions
@@ -83,27 +76,20 @@ end
     @spending_by_category = @transactions.joins(:category).group("categories.name").sum(:amount)
     @spending_by_person = @transactions.group(:person).sum(:amount)
 
-    # === Monthly bar chart (now reflects total amount per month) ===
-    all_monthly_totals = Transaction
-      .where("strftime('%Y', date) = ?", "2025")
-      .group("strftime('%Y-%m', date)")
-      .sum(:amount)
-
-        # === Monthly bar chart based on full year credit card cycles (7th–6th) ===
+    # === Monthly bar chart (7th–6th cycles) ===
     current_year = Date.today.year
     @monthly_labels = []
-@monthly_expenses = []
+    @monthly_expenses = []
 
-(1..12).each do |month|
-  start_date = Date.new(current_year, month, 7)
-  end_date = (start_date + 1.month).change(day: 6)
+    (1..12).each do |month|
+      start_date = Date.new(current_year, month, 7)
+      end_date = (start_date + 1.month).change(day: 6)
 
-  scope = Transaction.where(date: start_date..end_date)
-  scope = scope.where(person: params[:person]) if params[:person].present? && params[:person] != "Todos"
+      scope = current_user.transactions.where(date: start_date..end_date)
+      scope = scope.where(person: params[:person]) if params[:person].present? && params[:person] != "Todos"
 
-  @monthly_labels << start_date.strftime("%b %Y")
-  @monthly_expenses << scope.sum(:amount)
-end
-
+      @monthly_labels << start_date.strftime("%b %Y")
+      @monthly_expenses << scope.sum(:amount)
+    end
   end
 end

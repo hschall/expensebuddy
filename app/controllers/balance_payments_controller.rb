@@ -1,11 +1,10 @@
 class BalancePaymentsController < ApplicationController
   def index
-    # Auto-select latest cycle_month if not provided
     if params[:cycle_month].blank?
-      latest_date = BalancePayment.maximum(:date)
+      latest_date = current_user.balance_payments.maximum(:date)
 
       if latest_date.present?
-        cycle_end_day = Setting.cycle_end_day
+        cycle_end_day = current_user.setting.cycle_end_day
         if latest_date.day > cycle_end_day
           cycle_start = latest_date.change(day: cycle_end_day + 1)
         else
@@ -35,7 +34,7 @@ class BalancePaymentsController < ApplicationController
 
   def destroy_selected
     if params[:balance_payment_ids].present?
-      BalancePayment.where(id: params[:balance_payment_ids]).destroy_all
+      current_user.balance_payments.where(id: params[:balance_payment_ids]).destroy_all
       @balance_payments = filtered_balance_payments
 
       respond_to do |format|
@@ -54,16 +53,14 @@ class BalancePaymentsController < ApplicationController
   end
 
   def delete_all
-    BalancePayment.delete_all
+    current_user.balance_payments.delete_all
     redirect_to dashboard_path, notice: "Todos los pagos de saldo han sido eliminados correctamente."
   end
-
-
 
   private
 
   def filtered_balance_payments
-    records = BalancePayment.all
+    records = current_user.balance_payments
 
     records = records.where(person: params[:person]) if params[:person].present?
     records = records.where(category: params[:category]) if params[:category].present?
