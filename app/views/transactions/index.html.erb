@@ -30,7 +30,7 @@
 
     </div>
     <div class="col">
-      <%= text_field_tag :description, params[:description], placeholder: "Buscar descripción...", class: "form-control" %>
+      <%= text_field_tag :description, params[:description], placeholder: "Buscar descripción...", class: "form-control", id: "description-filter" %>
     </div>
     <div class="col-auto">
       <button type="button" class="btn-custom-primary-sm" id="transactions-filter-button">Filtrar</button>
@@ -136,3 +136,20 @@
   });
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("description-filter");
+    const rows = document.querySelectorAll("#transactions_table tbody tr");
+
+    if (!input || !rows.length) return;
+
+    input.addEventListener("input", () => {
+      const query = input.value.toLowerCase();
+
+      rows.forEach(row => {
+        const description = row.dataset.description || "";
+        row.style.display = description.includes(query) ? "" : "none";
+      });
+    });
+  });
+</script>
