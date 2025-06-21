@@ -89,7 +89,7 @@ class DashboardController < ApplicationController
       scope = scope.where(person: params[:person]) if params[:person].present? && params[:person] != "Todos"
 
       @monthly_labels << start_date.strftime("%b %Y")
-      @monthly_expenses << (scope.sum(:amount) || 0)
+      @monthly_expenses << (scope.sum(:amount).to_f || 0)
     end
   end
 end
