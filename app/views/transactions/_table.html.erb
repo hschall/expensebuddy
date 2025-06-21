@@ -30,10 +30,9 @@
 
         <td>
           <%= select_tag "transactions[#{tx.id}][category_id]",
-              options_from_collection_for_select(Category.all, :id, :name, tx.category_id),
+              options_from_collection_for_select(current_user.categories.order(:name), :id, :name, tx.category_id),
               class: "form-select form-select-sm", style: "font-size: 0.75rem;" %>
         </td>
-
         <td><%= tx.company_code %></td>
         <td><%= tx.country %></td>
       </tr>

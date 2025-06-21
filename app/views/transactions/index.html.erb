@@ -20,8 +20,8 @@
   options_for_select(current_user.transactions.distinct.pluck(:person).compact.sort, selected: params[:person]),
   prompt: "Persona",
   class: "form-select" %>
-
     </div>
+
     <div class="col">
       <%= select_tag :category_id,
     options_from_collection_for_select(current_user.categories.order(:name), :id, :name, selected: params[:category_id]),
@@ -33,8 +33,8 @@
       <%= text_field_tag :description, params[:description], placeholder: "Buscar descripción...", class: "form-control" %>
     </div>
     <div class="col-auto">
-      <button class="btn-custom-primary-sm" data-action="filters#applyManual">Filtrar</button>
-      <button class="btn-custom-primary-sm" data-action="filters#reset">Resetear</button>
+      <button type="button" class="btn-custom-primary-sm" id="transactions-filter-button">Filtrar</button>
+      <button type="button" class="btn-custom-primary-sm" id="transactions-reset-button">Resetear</button>
     </div>
   </div>
 
@@ -61,7 +61,7 @@
 
 <!-- ✅ JS to set form action based on clicked submit -->
 <script>
-  document.addEventListener("turbo:load", () => {
+  document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("transactions_form");
     if (!form) return;
 
@@ -97,3 +97,42 @@
     }
   });
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const filterBtn = document.getElementById("transactions-filter-button");
+    const resetBtn = document.getElementById("transactions-reset-button");
+
+    const personSelect = document.querySelector("select[name='person']");
+    const categorySelect = document.querySelector("select[name='category_id']");
+    const descriptionInput = document.querySelector("input[name='description']");
+    const cycleMonthSelect = document.querySelector("select[name='cycle_month']");
+
+    const basePath = window.location.pathname.replace(/\/+$/, ""); // clean trailing slash
+
+    if (filterBtn) {
+      filterBtn.addEventListener("click", () => {
+        const params = new URLSearchParams();
+
+        if (personSelect?.value) params.append("person", personSelect.value);
+        if (categorySelect?.value) params.append("category_id", categorySelect.value);
+        if (descriptionInput?.value) params.append("description", descriptionInput.value);
+        if (cycleMonthSelect?.value) params.append("cycle_month", cycleMonthSelect.value);
+
+        window.location.href = `${basePath}?${params.toString()}`;
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        if (personSelect) personSelect.value = "";
+        if (categorySelect) categorySelect.value = "";
+        if (descriptionInput) descriptionInput.value = "";
+        if (cycleMonthSelect) cycleMonthSelect.value = "";
+
+        window.location.href = basePath; // reload without query params
+      });
+    }
+  });
+</script>
+

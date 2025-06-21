@@ -87,9 +87,6 @@
 
 <!-- 📊 Chart + Category Summary -->
 <div class="row mb-4">
-  <%= debug @monthly_labels %>
-<%= debug @monthly_expenses %>
-
   <!-- Monthly Expenses Chart -->
 <div class="col-md-8">
   <div class="card h-100">
@@ -191,37 +188,43 @@
 
 
 <script>
-  document.addEventListener("turbo:load", () => {
-  const rows = document.querySelectorAll("#category-summary-table tbody tr");
-  const transactions = document.querySelectorAll("#recent-transactions tr");
+  document.addEventListener("DOMContentLoaded", function () {
+    const summaryTable = document.getElementById("category-summary-table");
+    const transactionsTable = document.getElementById("recent-transactions");
 
-  rows.forEach(row => {
-    row.addEventListener("click", () => {
-      const selectedCategory = row.dataset.category;
+    // Validate existence
+    if (!summaryTable || !transactionsTable) return;
 
-      // Highlight selected row
-      rows.forEach(r => r.classList.remove("table-primary"));
-      row.classList.add("table-primary");
+    const rows = summaryTable.querySelectorAll("tbody tr");
+    const transactions = transactionsTable.querySelectorAll("tr");
 
-      // Filter transactions
-      transactions.forEach(tx => {
-        const txCategory = tx.dataset.category;
-        tx.style.display = (txCategory === selectedCategory) ? "" : "none";
+    rows.forEach(row => {
+      row.addEventListener("click", () => {
+        const selectedCategory = row.dataset.category;
+
+        // Highlight selected row
+        rows.forEach(r => r.classList.remove("table-primary"));
+        row.classList.add("table-primary");
+
+        // Filter transactions by category
+        transactions.forEach(tx => {
+          const txCategory = tx.dataset.category;
+          tx.style.display = (txCategory === selectedCategory) ? "" : "none";
+        });
       });
     });
+
+    // Clear filter
+    const clearBtn = document.getElementById("clear-category-filter");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        rows.forEach(r => r.classList.remove("table-primary"));
+        transactions.forEach(tx => tx.style.display = "");
+      });
+    }
   });
-
-  // Optional: Clear filter button
-  const clearBtn = document.getElementById("clear-category-filter");
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      rows.forEach(r => r.classList.remove("table-primary"));
-      transactions.forEach(tx => tx.style.display = "");
-    });
-  }
-});
-
 </script>
+
 
 
 <canvas id="monthlyExpensesChart"></canvas>

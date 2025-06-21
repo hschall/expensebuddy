@@ -50,13 +50,45 @@
 <% end %>
 
 
+<!-- 🧾 Empresa Table Form -->
+<%= form_with url: "", method: :post, id: "empresas_form", data: { turbo: false } do %>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-<!-- 🧾 Empresa Table -->
-<%= form_with url: delete_selected_empresas_path, method: :delete, local: true do %>
   <div class="d-flex justify-content-start mb-2">
-    <%= submit_tag "Guardar cambios", formaction: save_all_empresas_path, formmethod: :post, class: "btn-custom-save-sm me-2" %>
-    <%= submit_tag "Eliminar seleccionadas", class: "btn-custom-danger-sm", data: { turbo_confirm: "¿Eliminar las empresas seleccionadas?" } %>
+    <!-- Save Changes -->
+    <%= submit_tag "Guardar cambios", class: "btn-custom-save-sm me-2", data: { action: "guardar" } %>
+
+    <!-- Delete Selected -->
+    <%= submit_tag "Eliminar seleccionadas", class: "btn-custom-danger-sm", data: { action: "eliminar", turbo_confirm: "¿Eliminar las empresas seleccionadas?" } %>
   </div>
 
   <%= render partial: "empresas/empresas_table", locals: { empresas: @empresas } %>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("empresas_form");
+    const savePath = "<%= save_all_empresas_path %>";
+    const deletePath = "<%= delete_selected_empresas_path %>";
+
+    form.addEventListener("submit", (e) => {
+      const action = e.submitter?.dataset.action;
+
+      if (action === "guardar") {
+        form.action = savePath;
+        form.method = "post";
+      } else if (action === "eliminar") {
+        form.action = deletePath;
+        form.method = "post"; // use POST if DELETE is not accepted, or spoof method with `_method`
+        // To spoof DELETE:
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "_method";
+        input.value = "delete";
+        form.appendChild(input);
+      }
+    });
+  });
+</script>
+
+

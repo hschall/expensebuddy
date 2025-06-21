@@ -25,13 +25,16 @@ export default class extends Controller {
   }
 
   reset() {
-    document.querySelector("select[name='person']").value = ""
-    document.querySelector("select[name='category_id']").value = ""
-    document.querySelector("input[name='description']").value = ""
-    document.querySelector("select[name='cycle_month']").value = ""
+  console.log("🧼 Reset triggered");
 
-    Turbo.visit(this.currentPath(), { responseType: "turbo-stream" })
-  }
+  document.querySelector("select[name='person']").value = "";
+  document.querySelector("select[name='category']").value = "";
+  document.querySelector("input[name='description']").value = "";
+  document.querySelector("select[name='cycle_month']").value = "";
+
+  Turbo.visit(this.currentPath(), { responseType: "turbo-stream" });
+}
+
 
   currentPath() {
     return window.location.pathname.replace(/\/+$/, "") // removes trailing slashes

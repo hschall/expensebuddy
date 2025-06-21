@@ -33,7 +33,7 @@
 
     <div class="col-auto">
       <button class="btn-custom-primary-sm" data-action="filters#applyManual">Filtrar</button>
-      <button class="btn-custom-primary-sm" data-action="filters#reset">Resetear</button>
+      <button type="button" class="btn-custom-primary-sm" data-reset>Resetear</button>
     </div>
   <% end %>
 
@@ -49,7 +49,7 @@
 </div>
 
 <script>
-  document.addEventListener("turbo:load", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const selectAll = document.getElementById("select_all_checkbox");
     const checkboxes = document.querySelectorAll(".bp-checkbox");
 
@@ -60,3 +60,26 @@
     }
   });
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const resetButton = document.querySelector("#bp-filters-form button[data-reset]");
+    if (!resetButton) return;
+
+    resetButton.addEventListener("click", (e) => {
+      e.preventDefault(); // prevent default form submission
+
+      const form = document.getElementById("bp-filters-form");
+
+      // Clear all inputs
+      form.querySelector("select[name='person']").value = "";
+      form.querySelector("select[name='category']").value = "";
+      form.querySelector("input[name='description']").value = "";
+      form.querySelector("select[name='cycle_month']").value = "";
+
+      // Submit form (simulates a fresh GET request with cleared params)
+      form.submit();
+    });
+  });
+</script>
+
