@@ -24,7 +24,7 @@
         <%= render 'nav/sidebar' %>
       <% else %>
         <div class="logout-button-only px-3 py-2">
-          <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "btn btn-outline-danger btn-sm" %>
+          <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "btn-custom-danger-sm" %>
         </div>
       <% end %>
     <% end %>
