@@ -21,7 +21,9 @@ class CategoriesController < ApplicationController
   @category = current_user.categories.find(params[:id])
 
   if @category.transactions.exists?
-    redirect_to categories_path, alert: "No puedes eliminar una categoría que está asociada a transacciones."
+    redirect_to categories_path, alert: "No puedes eliminar esta categoría porque está asociada a transacciones."
+  elsif Empresa.exists?(category_id: @category.id)
+    redirect_to categories_path, alert: "No puedes eliminar esta categoría porque está asignada a una empresa."
   else
     @category.destroy
     redirect_to categories_path, notice: "Categoría eliminada correctamente."
