@@ -25,7 +25,7 @@
               <%= link_to "Editar", edit_category_path(category), class: "btn-custom-primary-sm" %>
               <%= button_to "Eliminar", category_path(category),
                     method: :delete,
-                    form: { class: "d-inline" },
+                    form: { class: "d-inline", data: { turbo: false } },
                     data: { confirm: "¿Eliminar esta categoría?" },
                     class: "btn-custom-danger-sm" %>
             </td>
