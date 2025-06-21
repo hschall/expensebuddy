@@ -41,7 +41,7 @@ end
 end
 
 
-  resources :categories
+  resources :categories, except: [:show]
 
   resources :empresas, only: [:index, :edit, :update, :destroy] do
     collection do
