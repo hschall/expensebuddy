@@ -1,5 +1,6 @@
-import { Application } from "@hotwired/stimulus"
+// app/javascript/controllers/index.js
+
+import { application } from "../application"
 import FiltersController from "./filters_controller"
 
-const application = Application.start()
 application.register("filters", FiltersController)
