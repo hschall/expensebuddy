@@ -15,3 +15,6 @@ window.Stimulus = application
 
 // Load all controllers from app/javascript/controllers
 import "controllers"
+import "@rails/ujs"
+import Rails from "@rails/ujs"
+Rails.start()
