@@ -22,7 +22,7 @@ class CategoriesController < ApplicationController
 
   if @category.transactions.exists?
     redirect_to categories_path, alert: "No puedes eliminar esta categoría porque está asociada a transacciones."
-  elsif Empresa.exists?(category_id: @category.id)
+  elsif current_user.empresas.exists?(category_id: @category.id)
     redirect_to categories_path, alert: "No puedes eliminar esta categoría porque está asignada a una empresa."
   else
     @category.destroy

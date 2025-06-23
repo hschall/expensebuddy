@@ -56,7 +56,7 @@ class DashboardController < ApplicationController
     filtered_categories = if params[:category_filter].present?
                             Array(params[:category_filter])
                           else
-                            Category.pluck(:name)
+                            current_user.categories.pluck(:name)
                           end
     @selected_categories = filtered_categories
 

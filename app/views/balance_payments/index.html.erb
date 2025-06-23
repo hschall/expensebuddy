@@ -15,14 +15,14 @@
 
     <div class="col">
       <%= select_tag :person,
-          options_for_select(BalancePayment.distinct.pluck(:person).compact.sort, params[:person]),
+          options_for_select(current_user.balance_payments.distinct.pluck(:person).compact.sort, params[:person]),
           prompt: "Persona",
           class: "form-select" %>
     </div>
 
     <div class="col">
       <%= select_tag :category,
-          options_for_select(BalancePayment.distinct.pluck(:category).compact.sort, params[:category]),
+          options_for_select(current_user.balance_payments.distinct.pluck(:category).compact.sort, params[:category]),
           prompt: "Categoría",
           class: "form-select" %>
     </div>
