@@ -65,16 +65,22 @@
     const form = document.getElementById("transactions_form");
     if (!form) return;
 
-    form.addEventListener("submit", function (e) {
-      const clickedButton = document.activeElement;
-      const actionType = clickedButton?.dataset?.action;
+    let clickedAction = null;
 
-      if (actionType === "guardar") {
+    const buttons = form.querySelectorAll("input[type='submit'][data-action]");
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        clickedAction = button.dataset.action;
+      });
+    });
+
+    form.addEventListener("submit", function (e) {
+      if (clickedAction === "guardar") {
         form.action = "/transactions/save_all";
         form.method = "post";
-      } else if (actionType === "eliminar") {
+      } else if (clickedAction === "eliminar") {
         form.action = "/transactions/delete_selected";
-        form.method = "post"; // Simulate DELETE
+        form.method = "post";
         const methodInput = document.createElement("input");
         methodInput.setAttribute("type", "hidden");
         methodInput.setAttribute("name", "_method");
@@ -85,18 +91,9 @@
         alert("No se pudo determinar la acción del formulario.");
       }
     });
-
-    // ✅ Select all checkbox behavior
-    const selectAll = document.getElementById("select_all_checkbox");
-    const checkboxes = document.querySelectorAll(".transaction-checkbox");
-
-    if (selectAll) {
-      selectAll.addEventListener("change", () => {
-        checkboxes.forEach(cb => cb.checked = selectAll.checked);
-      });
-    }
   });
 </script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

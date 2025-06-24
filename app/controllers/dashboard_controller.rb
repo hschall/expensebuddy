@@ -33,9 +33,15 @@ class DashboardController < ApplicationController
     if params[:cycle_month].present?
       year, month = params[:cycle_month].split("-").map(&:to_i)
       cycle_end_day = current_user.setting&.cycle_end_day || 6
+      cycle_start_day = cycle_end_day + 1
 
-      @cycle_end_date = Date.new(year, month, cycle_end_day)
-      @cycle_start_date = (@cycle_end_date + 1.month).change(day: cycle_end_day + 1)
+      # cycle starts in the selected month
+      @cycle_start_date = Date.new(year, month, cycle_start_day)
+
+      # cycle ends in the *next* month, on the cycle_end_day
+      @cycle_end_date = (@cycle_start_date + 1.month).change(day: cycle_end_day)
+
+      # adjust payment due date
       @payment_due_date = Holiday.adjust_to_business_day(@cycle_end_date + 13)
 
       @formatted_cycle_range = "Para el periodo del #{@cycle_start_date.day} de #{I18n.l(@cycle_end_date, format: '%B', locale: :es).capitalize} al #{@cycle_end_date.day} de #{I18n.l(@cycle_start_date, format: '%B', locale: :es).capitalize}"
