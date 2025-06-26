@@ -44,7 +44,8 @@ class DashboardController < ApplicationController
       # adjust payment due date
       @payment_due_date = Holiday.adjust_to_business_day(@cycle_end_date + 13)
 
-      @formatted_cycle_range = "Para el periodo del #{@cycle_start_date.day} de #{I18n.l(@cycle_end_date, format: '%B', locale: :es).capitalize} al #{@cycle_end_date.day} de #{I18n.l(@cycle_start_date, format: '%B', locale: :es).capitalize}"
+      @formatted_cycle_range = "Para el periodo del #{@cycle_start_date.day} de #{I18n.l(@cycle_start_date, format: '%B', locale: :es)} al #{@cycle_end_date.day} de #{I18n.l(@cycle_end_date, format: '%B', locale: :es)}"
+
     end
 
     @transactions = transactions

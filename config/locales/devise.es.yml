@@ -12,7 +12,7 @@ es:
       last_attempt: "Te queda un intento antes de que tu cuenta sea bloqueada."
       not_found_in_database: "%{authentication_keys} o contraseña no válidos."
       timeout: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente para continuar."
-      unauthenticated: "Porfavor registra el día de corte de tarjeta para continuar."
+      unauthenticated: "Por favor registra el día de corte de tarjeta para continuar."
       unconfirmed: "Debes confirmar tu dirección de correo antes de continuar."
     mailer:
       confirmation_instructions:
@@ -51,13 +51,21 @@ es:
       send_instructions: "Recibirás un correo con instrucciones para desbloquear tu cuenta en unos minutos."
       send_paranoid_instructions: "Si tu cuenta existe, recibirás un correo con instrucciones para desbloquearla en unos minutos."
       unlocked: "Tu cuenta ha sido desbloqueada exitosamente. Por favor inicia sesión para continuar."
+
+  activerecord:
+    attributes:
+      user:
+        password: "contraseña"
+        password_confirmation: ""
+
   errors:
     messages:
+      confirmation: "Las contraseñas no coinciden"
       already_confirmed: "ya fue confirmada, por favor inicia sesión"
       confirmation_period_expired: "debe ser confirmada en %{period}, solicita una nueva confirmación"
       expired: "ha expirado, por favor solicita una nueva"
       not_found: "no se encontró"
       not_locked: "no estaba bloqueada"
       not_saved:
-        one: "1 error impidió que se guardara %{resource}:"
-        other: "%{count} errores impidieron que se guardara %{resource}:"
+        one: "1 error detectado:"
+        other: "%{count} errores detectados:"

@@ -23,7 +23,7 @@
 
             <td>
               <%= select_tag "transactions[#{tx.id}][person]",
-                  options_for_select(Transaction.distinct.pluck(:person).compact.sort, tx.person),
+                  options_for_select(current_user.transactions.distinct.pluck(:person).compact.sort, tx.person),
                   class: "form-select form-select-sm", style: "font-size: 0.75rem;"  %>
             </td>
 
