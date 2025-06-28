@@ -1,4 +1,9 @@
 <div class="sidebar-custom">
+  <button id="closeSidebar" class="btn btn-sm btn-light d-md-none mb-3" style="padding: 4px 8px; font-size: 1.2rem;">
+  &#9776;
+</button>
+
+
   <!-- User Avatar -->
 <% if current_user %>
   <div class="user-section">
@@ -42,13 +47,12 @@
 </div>
 
 
-  <div style="margin-top: auto; padding-top: 20px; width: 13%; border-top: 1px solid #ccc;">
+  <div class="sidebar-footer">
   <div style="font-size: 0.9rem; color: #555;">
     <strong>ExpenseBuddy.mx</strong><br>
   </div>
-  <br></br>
+  <br>
   <%= button_to "Cerrar Sesion", destroy_user_session_path, method: :delete, class:'btn-custom-danger-sm' %>
-
 </div>
 
 </div>
