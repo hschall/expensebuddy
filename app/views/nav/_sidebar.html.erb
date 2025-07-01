@@ -50,6 +50,10 @@
   <div class="sidebar-footer">
   <div style="font-size: 0.9rem; color: #555;">
     <strong>ExpenseBuddy.mx</strong><br>
+    <%= link_to manual_path, class: "sidebar-link" do %>
+  <%= image_tag "help.svg", class: "sidebar-icon" %> Ayuda / Manual
+<% end %>
+
   </div>
   <br>
   <%= button_to "Cerrar Sesion", destroy_user_session_path, method: :delete, class:'btn-custom-danger-sm' %>

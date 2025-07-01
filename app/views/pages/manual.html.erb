@@ -1,0 +1,39 @@
+<div class="container mt-4">
+  <h3 class="mb-3">Guía de Usuario</h3>
+
+<div id="userManualCarousel" class="carousel slide" data-bs-ride="false">
+
+    <!-- Slide indicators (dots) -->
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#userManualCarousel" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#userManualCarousel" data-bs-slide-to="1"></button>
+      <button type="button" data-bs-target="#userManualCarousel" data-bs-slide-to="2"></button>
+      <!-- Add more buttons if you add more slides -->
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <%= image_tag "manual/slide1.png", class: "d-block w-100", alt: "Slide 1" %>
+      </div>
+      <div class="carousel-item">
+        <%= image_tag "manual/slide2.jpg", class: "d-block w-100", alt: "Slide 2" %>
+      </div>
+      <div class="carousel-item">
+        <%= image_tag "manual/slide3.jpg", class: "d-block w-100", alt: "Slide 3" %>
+      </div>
+      <!-- Add more slides here -->
+    </div>
+
+    <!-- Controls (arrows) -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#userManualCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#userManualCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+
+  </div>
+</div>

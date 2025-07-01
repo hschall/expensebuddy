@@ -10,6 +10,8 @@ devise_for :users, controllers: {
 
   get "dashboard", to: "dashboard#index"
 
+  get '/manual', to: 'pages#manual'
+
   get  "turbo_test",  to: "pages#turbo_test"
   post "turbo_test",  to: "pages#turbo_test_response"
 

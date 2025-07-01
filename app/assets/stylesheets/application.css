@@ -282,3 +282,14 @@
     padding: 10px 0;
   }
 }
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1);
+}
+
+.carousel-item img {
+  max-height: 80vh;       /* Limits image height to 80% of viewport height */
+  object-fit: contain;     /* Keeps image inside without stretching */
+}
+
