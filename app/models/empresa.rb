@@ -14,16 +14,21 @@ class Empresa < ApplicationRecord
   after_update :reset_category_if_inconsistent
 
   def update_categorization_status!
-    child_categories = empresa_descriptions.pluck(:category_id).uniq.compact
+  child_categories = empresa_descriptions.pluck(:category_id).uniq.compact
 
-    if child_categories.empty?
-      update!(categorization_status: "consistent")
-    elsif child_categories.size == 1 && child_categories.first == category_id
-      update!(categorization_status: "consistent")
-    else
-      update!(categorization_status: "inconsistent")
-    end
+  if child_categories.empty?
+    update!(categorization_status: "consistent")
+  elsif child_categories.size == 1 && child_categories.first == category_id
+    update!(categorization_status: "consistent")
+  elsif child_categories.size == 1
+    # New: If all children have the same category, update empresa.category_id to match
+    update!(category_id: child_categories.first, categorization_status: "consistent")
+  else
+    # Inconsistent case → keep empresa's category as is (or set it elsewhere)
+    update!(categorization_status: "inconsistent")
   end
+end
+
 
   def self.update_all_categorization_statuses_for(user)
     user.empresas.find_each do |empresa|

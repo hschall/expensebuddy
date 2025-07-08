@@ -45,7 +45,7 @@ end
 end
 
 
-  resources :categories, except: [:show]
+resources :categories, except: [:show]
 
 resources :empresas, only: [:index, :edit, :update, :destroy] do
   collection do
@@ -69,6 +69,12 @@ end
 
 
 resource :settings, only: [:edit, :update]
+
+
+resources :saldo_histories, only: [:index, :destroy] do
+  post :generate, on: :collection
+end
+
 
 
   # Health check

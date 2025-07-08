@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_one :setting
   has_many :empresas
   has_many :categories
+  has_many :saldo_histories, dependent: :destroy
 
   after_create :create_default_setting #:create_default_categories, 
 

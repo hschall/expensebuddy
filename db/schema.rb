@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_02_052318) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_08_020324) do
   create_table "balance_payments", force: :cascade do |t|
     t.date "date"
     t.decimal "amount"
@@ -58,6 +58,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_02_052318) do
     t.index ["user_id"], name: "index_empresas_on_user_id"
   end
 
+  create_table "saldo_histories", force: :cascade do |t|
+    t.string "cycle_month"
+    t.decimal "saldo"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_saldo_histories_on_user_id"
+  end
+
   create_table "settings", force: :cascade do |t|
     t.integer "cycle_end_day"
     t.datetime "created_at", null: false
@@ -102,6 +111,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_02_052318) do
   add_foreign_key "empresa_descriptions", "categories"
   add_foreign_key "empresa_descriptions", "empresas"
   add_foreign_key "empresas", "users"
+  add_foreign_key "saldo_histories", "users"
   add_foreign_key "settings", "users"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"

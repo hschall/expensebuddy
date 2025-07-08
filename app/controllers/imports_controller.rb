@@ -156,6 +156,7 @@ def batch_create
   end
 
   total = transactions_data.count + payments_data.count
+  SaldoHistoryGenerator.new(current_user).generate_for_cycles(all_cycles)
   redirect_to dashboard_path, notice: "Se actualizaron #{all_cycles.size} ciclos con un total de #{total} registros."
 end
 

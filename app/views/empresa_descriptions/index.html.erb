@@ -1,8 +1,27 @@
-<h3>Descripciones de <%= @empresa.descripcion %> (RFC: <%= @empresa.identificador %>)</h3>
+<div class="container h-100" style="width: 100%; max-width: 1800px; margin: 10 auto; font-size: 0.75rem; background-color: #fff;">
+
+<h3><%= @empresa.identificador %> : <%= @empresa.descripcion %></h3>
+
+</br>
+</br>
 
 <%= form_with url: update_all_empresa_empresa_descriptions_path(@empresa), method: :post, local: true do %>
+
+<div class="d-flex gap-2 align-items-center mb-3">
+  <%= select_tag "apply_category_id",
+      options_from_collection_for_select(@categories, :id, :name),
+      include_blank: "Selecciona categoría...",
+      class: "form-select form-select-sm",
+      style: "width: 250px; font-size: 0.75rem;" %>
+
+  <button type="button" class="btn-custom-primary-sm" id="apply-category-btn">
+    Aplicar a seleccionados
+  </button>
+</div>
+
+
   <div class="container-fluid p-0 mt-3">
-    <table class="table table-sm table-hover table-striped text-center align-middle mb-0" id="descriptions_table">
+    <table class="table table-sm table-hover table-striped table-borderless text-center align-middle mb-0" id="descriptions_table">
       <thead class="sticky-top">
         <tr style="height: 60px;">
           <th><%= check_box_tag "select_all", "", false, id: "select_all_checkbox" %></th>
@@ -12,7 +31,7 @@
       </thead>
       <tbody>
         <% @empresa_descriptions.each do |desc| %>
-          <tr style="height: 55px;">
+          <tr style="height: 50px;">
             <td><%= check_box_tag "description_ids[]", desc.id, false, class: "description-checkbox" %></td>
             <td><%= desc.description %></td>
             <td>
@@ -27,19 +46,47 @@
       </tbody>
     </table>
   </div>
+</div>
+</br>
 
-  <%= submit_tag "Guardar cambios", class: "btn btn-primary btn-sm mt-3" %>
+  <%= submit_tag "Guardar cambios", class: "btn-custom-save-sm" %>
 <% end %>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const selectAll = document.getElementById("select_all_checkbox");
     const checkboxes = document.querySelectorAll(".description-checkbox");
+    const applyButton = document.getElementById("apply-category-btn");
+    const categorySelect = document.querySelector("select[name='apply_category_id']");
 
     if (selectAll) {
       selectAll.addEventListener("change", () => {
         checkboxes.forEach(cb => cb.checked = selectAll.checked);
       });
     }
+
+    if (applyButton && categorySelect) {
+      applyButton.addEventListener("click", () => {
+        const selectedCategory = categorySelect.value;
+        if (!selectedCategory) {
+          alert("Selecciona una categoría para aplicar.");
+          return;
+        }
+
+        const selectedDescriptions = Array.from(checkboxes).filter(cb => cb.checked);
+        if (selectedDescriptions.length === 0) {
+          alert("Selecciona al menos una descripción.");
+          return;
+        }
+
+        selectedDescriptions.forEach(cb => {
+          const select = document.querySelector(`select[name='descriptions[${cb.value}][category_id]']`);
+          if (select) {
+            select.value = selectedCategory;
+          }
+        });
+      });
+    }
   });
 </script>
+

@@ -44,10 +44,9 @@
 
 
   <%= form_with url: destroy_selected_balance_payments_path, method: :delete, data: { turbo_confirm: "¿Eliminar los pagos seleccionados?" }, local: true do %>
-    <div class="d-flex justify-content-start mb-2">
+    <div class="col-auto">
       <%= submit_tag "Eliminar seleccionados", class: "btn-custom-danger-sm" %>
     </div>
-
 
 
     <%= turbo_frame_tag "balance_payments_table" do %>

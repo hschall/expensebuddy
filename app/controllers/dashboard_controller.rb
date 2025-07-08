@@ -109,29 +109,14 @@ Rails.logger.info "🔍 Current cycle balance payments total: #{current_cycle_ba
 Rails.logger.info "✅ Saldo a favor: #{@saldo_a_favor}"
 
 
-    # === ✅ Saldo a Favor Calculation ===
+    # === ✅ Saldo a Favor using SaldoHistories ===
 
-    # 1. Calculate previous cycle_month
-    previous_cycle_date = Date.strptime(params[:cycle_month], "%Y-%m") - 1.month
-    previous_cycle_month = previous_cycle_date.strftime("%Y-%m")
+# 1. Find saldo from the SaldoHistory table for the current cycle_month
+@saldo_a_favor = current_user.saldo_histories.find_by(cycle_month: params[:cycle_month])&.saldo || 0
 
-    # 2. Sum total balance of previous cycle
-    previous_cycle_transactions = current_user.transactions.where(cycle_month: previous_cycle_month)
-    previous_positive = previous_cycle_transactions.where("amount > 0").sum(:amount).to_f
-    previous_negative = previous_cycle_transactions.where("amount < 0").sum(:amount).to_f
-    previous_total_balance = previous_positive + previous_negative
+# 2. Final total = total_balance + saldo a favor
+@total_final = @total_balance + @saldo_a_favor
 
-    # 3. Sum balance payments of current cycle
-    current_cycle_balance_payments = current_user.balance_payments.where(cycle_month: params[:cycle_month]).sum(:amount).to_f
-
-    # 4. Final saldo calculation
-    if previous_total_balance.zero?
-      @saldo_a_favor = 0
-    else
-      @saldo_a_favor = previous_total_balance + current_cycle_balance_payments
-    end
-
-    @total_final = @total_balance + @saldo_a_favor
 
   end
 

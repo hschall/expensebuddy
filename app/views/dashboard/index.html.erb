@@ -15,6 +15,9 @@
   <div class="greeting-date">
     <%= I18n.l(Date.today, format: :custom, locale: :es) %>
   </div>
+
+  <%#= button_to "Generar saldos a favor", generate_saldo_histories_path, method: :post, class: "btn-custom-primary-sm", data: { turbo_confirm: "¿Estás seguro? Esto recalculará todos los saldos a favor." } %>
+
   <div class="dashboard-divider"></div>
 </div>
 
@@ -51,7 +54,7 @@
     <div class="card h-100">
       <div class="card-body">
         <h6 class="text-muted">Total a Pagar</h6>
-        <h3 class="fw-bold"><%= number_to_currency(@total_balance) %></h3>
+        <h3 class="fw-bold"><%= number_to_currency(@total_final) %></h3>
         <small class="text-muted" style="font-size: 0.75rem;"><%= @formatted_cycle_range %></small>
       </div>
     </div>
@@ -67,11 +70,13 @@
   <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body">
-        <h6 class="text-muted">Reembolsos</h6>
-        <h3 class="fw-bold"><%= number_to_currency(@total_negative_amount.abs) %></h3>
+        <h6 class="text-muted">Reembolsos + Saldo a favor</h6>
+        <h3 class="fw-bold"><%= number_to_currency(@total_negative_amount.abs-@saldo_a_favor) %></h3>
+        <small class="text-muted" style="font-size: 0.65rem;">Saldo a favor disponible a partir de la fecha de corte</small>
       </div>
     </div>
   </div>
+
   <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body">
@@ -83,23 +88,6 @@
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-  <div class="card h-100">
-    <div class="card-body">
-      <h6 class="text-muted">Saldo a favor</h6>
-      <h3 class="fw-bold"><%= number_to_currency(@saldo_a_favor) %></h3>
-    </div>
-  </div>
-</div>
-<div class="col-md-3">
-  <div class="card h-100">
-    <div class="card-body">
-      <h6 class="text-muted">Total Final</h6>
-      <h3 class="fw-bold"><%= number_to_currency(@total_final) %></h3>
-    </div>
-  </div>
-</div>
-
 </div>
 
 <!-- 📊 Chart + Category Summary -->
