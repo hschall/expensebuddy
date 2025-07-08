@@ -1,0 +1,35 @@
+<div class="row g-3 mb-4">
+  <div class="col-auto">
+    <div class="dashboard-card">
+      <strong>Total registros:</strong> <%= balance_payments.count %>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <div class="dashboard-card">
+      <strong>Total monto:</strong> <%= number_to_currency(balance_payments.sum(&:amount)) %>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <div class="dashboard-card">
+      <strong>Por persona:</strong>
+      <ul class="list-unstyled mb-0">
+        <% balance_payments.group_by(&:person).each do |person, records| %>
+          <li><%= person %>: <%= number_to_currency(records.sum(&:amount)) %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <div class="dashboard-card">
+      <strong>Por categoría:</strong>
+      <ul class="list-unstyled mb-0">
+        <% balance_payments.group_by(&:category).each do |category, records| %>
+          <li><%= category.presence || "Sin categoría" %>: <%= number_to_currency(records.sum(&:amount)) %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

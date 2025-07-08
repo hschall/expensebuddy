@@ -83,6 +83,23 @@
       </div>
     </div>
   </div>
+  <div class="col-md-3">
+  <div class="card h-100">
+    <div class="card-body">
+      <h6 class="text-muted">Saldo a favor</h6>
+      <h3 class="fw-bold"><%= number_to_currency(@saldo_a_favor) %></h3>
+    </div>
+  </div>
+</div>
+<div class="col-md-3">
+  <div class="card h-100">
+    <div class="card-body">
+      <h6 class="text-muted">Total Final</h6>
+      <h3 class="fw-bold"><%= number_to_currency(@total_final) %></h3>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <!-- 📊 Chart + Category Summary -->

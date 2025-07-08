@@ -5,9 +5,13 @@
   <%= button_to "Importar nuevas empresas desde transacciones", import_from_transactions_empresas_path,
                 method: :post, class: "btn-custom-action-sm" %>
 
-  <%= button_to "Actualizar categorías en base de datos", update_all_transaction_categories_empresas_path,
+  <%#= button_to "Actualizar categorías en base de datos", update_all_transaction_categories_empresas_path,
                 method: :post, class: "btn-custom-action-sm btn-sm" %>
+
+  <%= link_to "Ver Sin categorizar", empresas_path(estado_filter: "sin_categorizar", identificador_filter: "", categoria_filter: "", search: "", commit: "Filtrar"), class: "btn-custom-action-sm btn-sm" %>
+
 </div>
+
 
 
 <!-- 🔍 Filter Form -->
@@ -21,10 +25,22 @@
   </div>
 
   <div class="col-auto">
+  <%= label_tag :estado_filter, "Estado", class: "form-label" %>
+  <%= select_tag :estado_filter,
+        options_for_select([
+          ["Todos", ""],
+          ["Categorizado", "categorizado"],
+          ["Sin categorizar", "sin_categorizar"]
+        ], selected: params[:estado_filter]),
+        class: "form-select form-select-sm" %>
+</div>
+
+
+ <div class="col-auto">
   <%= label_tag :categoria_filter, "Categoría", class: "form-label" %>
   <%= select_tag :categoria_filter,
         options_for_select(
-          [["Todas", ""], ["Sin categoría", "sin"]] +
+          [["Todas", ""]] +
           current_user.categories
                       .where.not(name: "Sin categoría")
                       .order(:name)
@@ -35,6 +51,7 @@
         class: "form-select form-select-sm" %>
 </div>
 
+
   <div class="col-auto">
     <%= label_tag :search, "Buscar descripción", class: "form-label" %>
     <%= text_field_tag :search, params[:search], placeholder: "Ej: OXXO, Soriana...", class: "form-control form-control-sm" %>
@@ -43,7 +60,7 @@
   <div class="col-auto d-flex gap-2">
     <%= submit_tag "Filtrar", class: "btn-custom-primary-sm" %>
 
-    <% if params[:identificador_filter].present? || params[:categoria_filter].present? || params[:search].present? %>
+    <% if params[:identificador_filter].present? || params[:estado_filter].present? || params[:categoria_filter].present? || params[:search].present? %>
       <%= link_to "Quitar filtros", empresas_path, class: "btn-custom-primary-sm btn-sm" %>
     <% end %>
   </div>

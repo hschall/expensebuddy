@@ -37,10 +37,18 @@
     </div>
   <% end %>
 
+  <!-- 🧾 DASHBOARD -->
+<%= turbo_frame_tag "balance_payments_dashboard" do %>
+  <%= render partial: "balance_payments/dashboard", locals: { balance_payments: @balance_payments } %>
+<% end %>
+
+
   <%= form_with url: destroy_selected_balance_payments_path, method: :delete, data: { turbo_confirm: "¿Eliminar los pagos seleccionados?" }, local: true do %>
     <div class="d-flex justify-content-start mb-2">
       <%= submit_tag "Eliminar seleccionados", class: "btn-custom-danger-sm" %>
     </div>
+
+
 
     <%= turbo_frame_tag "balance_payments_table" do %>
       <%= render partial: "balance_payments/table", locals: { balance_payments: @balance_payments } %>

@@ -3,11 +3,13 @@
     <table class="table table-borderless table-striped table-hover text-center align-middle">
       <thead class="sticky-top">
         <tr>
-          <!-- Updated ID for select all checkbox -->
-          <th><%= check_box_tag "select_all_empresas", "", false, id: "select_all_empresas_checkbox" %></th>
-          <th>RFC</th>
-          <th>Ejemplo Descripción</th>
-          <th>Categoría</th>
+          <th style="color: black;"><%= check_box_tag "select_all_empresas", "", false, id: "select_all_empresas_checkbox" %></th>
+          <th style="color: black;"><%= sortable "identificador", "RFC" %></th>
+          <th style="color: black;">Estado</th>
+          <th style="color: black;"><%= sortable "descripcion", "Ejemplo Descripción" %></th>
+          <th style="color: black;">Categoría</th>
+          <th style="color: black;"><%= sortable "descripciones", "# Registros" %></th>
+          <th style="color: black;">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -16,12 +18,57 @@
             <td>
               <%= check_box_tag "empresa_ids[]", empresa.id, false, class: "empresa-checkbox" %>
             </td>
+
             <td><%= empresa.identificador %></td>
-            <td><%= empresa.descripcion %></td>
+
             <td>
-              <%= select_tag "empresas[#{empresa.id}][category_id]",
-                options_from_collection_for_select(current_user.categories.order(:name), :id, :name, empresa.category_id),
-                class: "form-select form-select-sm" %>
+              <% if empresa.identificador.start_with?("Sin identificador") %>
+                <% if empresa.category.nil? || empresa.category.name == "Sin categoría" %>
+                  <span class="badge estado-tag bg-sincat">Sin categoría</span>
+                <% else %>
+                  <span class="badge estado-tag bg-categorizado">Categorizado</span>
+                <% end %>
+              <% elsif empresa.inconsistent? %>
+                <% if empresa.empresa_descriptions.any? { |desc| desc.category_id.nil? || desc.category&.name == "Sin categoría" } %>
+                  <span class="badge estado-tag bg-incompleto">Incompleto</span>
+                <% else %>
+                  <span class="badge estado-tag bg-categorizado">Categorizado</span>
+                <% end %>
+              <% elsif empresa.consistent? %>
+                <% if empresa.category.nil? || empresa.category.name == "Sin categoría" %>
+                  <span class="badge estado-tag bg-sincat">Sin categoría</span>
+                <% else %>
+                  <span class="badge estado-tag bg-categorizado">Categorizado</span>
+                <% end %>
+              <% end %>
+            </td>
+      <td><%= empresa.descripcion %></td>
+            <td>
+              <% if !empresa.identificador.start_with?("Sin identificador") && empresa.inconsistent? %>
+                <input type="text" class="form-control form-control-sm text-center" value="Personalizado" disabled
+                  style="background-color: #b7d6e1; font-size: 0.8rem; font-weight: bold;" />
+              <% else %>
+                <% categoria = current_user.categories.find_by(id: empresa.category_id) %>
+                <% background_color =
+                    if categoria.nil? || categoria.name == "Sin categoría"
+                      "#ffffff"
+                    else
+                      "#bce1d6"
+                    end %>
+
+                <%= select_tag "empresas[#{empresa.id}][category_id]",
+                  options_from_collection_for_select(current_user.categories.order(:name), :id, :name, empresa.category_id),
+                  class: "form-select form-select-sm categoria-select text-center",
+                  style: "background-color: #{background_color}; font-size: 0.8rem; color: black; font-weight: bold;" %>
+              <% end %>
+            </td>
+            <td>
+              <%= empresa.empresa_descriptions.size %>
+            </td>
+            <td>
+              <% unless empresa.identificador.start_with?("Sin identificador") || empresa.empresa_descriptions.size <= 1 %>
+                <%= link_to "Ver", empresa_empresa_descriptions_path(empresa), class: "btn-custom-primary-sm ver-descripciones" %>
+              <% end %>
             </td>
           </tr>
         <% end %>
@@ -30,16 +77,41 @@
   </div>
 </div>
 
-<!-- ✅ Select All Script (matches Transacciones table behavior) -->
+<!-- ✅ Select All + Unsaved Changes Detection Script -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const selectAll = document.getElementById("select_all_empresas_checkbox");
     const checkboxes = document.querySelectorAll(".empresa-checkbox");
+    let isDirty = false;
 
     if (selectAll) {
       selectAll.addEventListener("change", () => {
         checkboxes.forEach(cb => cb.checked = selectAll.checked);
       });
     }
+
+    // Track dropdown changes
+    document.querySelectorAll(".categoria-select").forEach(select => {
+      select.addEventListener("change", () => {
+        isDirty = true;
+      });
+    });
+
+    // Confirm on 'Ver Descripciones'
+    document.querySelectorAll("a.ver-descripciones").forEach(link => {
+      link.addEventListener("click", function (e) {
+        if (isDirty) {
+          const proceed = confirm("Tienes cambios no guardados. Si continúas, se perderán. ¿Quieres seguir?");
+          if (!proceed) {
+            e.preventDefault();
+          }
+        }
+      });
+    });
+
+    // Reset dirty flag on form submit
+    document.querySelector("form")?.addEventListener("submit", () => {
+      isDirty = false;
+    });
   });
 </script>

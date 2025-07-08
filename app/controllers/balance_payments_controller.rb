@@ -19,6 +19,9 @@ class BalancePaymentsController < ApplicationController
     end
 
     @balance_payments = filtered_balance_payments
+    @total_current_payments = @balance_payments.sum(:amount)
+
+    
 
     respond_to do |format|
       format.html

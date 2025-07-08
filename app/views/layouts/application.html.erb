@@ -21,7 +21,7 @@
 
     <% if user_signed_in? && !devise_controller? %>
       <% if current_user.setting&.cycle_end_day.present? %>
-        <%= render 'nav/sidebar' %>
+        <%= render "nav/sidebar", highlight_empresas: empresas_with_pending_categories?(current_user) %>
       <% else %>
         <div class="logout-button-only px-3 py-2">
           <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "btn-custom-danger-sm" %>

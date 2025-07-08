@@ -1,7 +1,6 @@
 require "roo"
 
 class StatementParser
-  
   def initialize(file, user)
     @file = file
     @user = user
@@ -9,9 +8,9 @@ class StatementParser
 
   def parse
     Rails.logger.info "🔍 File class: #{@file.class}"
-Rails.logger.info "🔍 File responds to path? #{@file.respond_to?(:path)}"
-Rails.logger.info "🔍 File path: #{@file.path if @file.respond_to?(:path)}"
-Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @file.respond_to?(:original_filename)}"
+    Rails.logger.info "🔍 File responds to path? #{@file.respond_to?(:path)}"
+    Rails.logger.info "🔍 File path: #{@file.path if @file.respond_to?(:path)}"
+    Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @file.respond_to?(:original_filename)}"
 
     begin
       file_path = @file.respond_to?(:tempfile) ? @file.tempfile.path : @file.path
@@ -28,7 +27,7 @@ Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @fi
     transactions = []
     balance_payments = []
 
-    # Step 1: Find the header row dynamically
+    # Step 1: Find header row dynamically
     header_row_index = nil
     header_keys = {}
 
@@ -59,7 +58,6 @@ Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @fi
       row = sheet.row(i)
       next if row.compact.empty?
 
-      # Fetch fields using mapped indexes
       fecha_de_compra = row[header_keys[:fecha_de_compra]]
       fecha_col1 = row[header_keys[:fecha_col1]]
       descripcion = row[header_keys[:descripcion]].to_s
@@ -67,22 +65,20 @@ Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @fi
       next if record_date.blank?
 
       cycle_month_str = cycle_month_for_date(record_date)
+      company_code = extract_company_code(row[header_keys[:info_adicional]])
+
       record = {
         date: record_date,
         description: descripcion,
         person: row[header_keys[:titular]],
         amount: row[header_keys[:importe]],
-        company_code: extract_company_code(row[header_keys[:info_adicional]]),
+        company_code: company_code,
         country: row[header_keys[:pais]],
         cycle_month: cycle_month_str
       }
 
       if record[:amount].to_f < 0 && balance_payment_window?(record_date)
-        if descripcion.downcase.include?("gracias por su pago en")
-          record[:category] = "Pago de saldo"
-        else
-          record[:category] = "Reembolso"
-        end
+        record[:category] = descripcion.downcase.include?("gracias por su pago en") ? "Pago de saldo" : "Reembolso"
         balance_payments << record
       else
         transactions << record
@@ -106,6 +102,7 @@ Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @fi
 
     day = parsed.day
     cycle_end_day = @user.setting&.cycle_end_day
+    return nil unless cycle_end_day
 
     if day > cycle_end_day
       safe_day = [cycle_end_day + 1, parsed.end_of_month.day].min
@@ -123,28 +120,23 @@ Rails.logger.info "🔍 File original_filename: #{@file.original_filename if @fi
     return nil if info.blank?
 
     first_part = info.to_s.split("/").first.to_s.strip
-    if first_part =~ /(RFC\w+)/
-      $1
-    else
-      nil
-    end
+    first_part =~ /(RFC\w+)/ ? $1 : nil
   end
 
   def balance_payment_window?(date)
-  return false if date.blank?
+    return false if date.blank?
 
-  parsed_date = Date.parse(date.to_s) rescue nil
-  return false unless parsed_date
+    parsed_date = Date.parse(date.to_s) rescue nil
+    return false unless parsed_date
 
-  cycle_end_day = @user.setting&.cycle_end_day
-  raise "Falta configurar el día de corte de tarjeta." unless cycle_end_day
+    cycle_end_day = @user.setting&.cycle_end_day
+    raise "Falta configurar el día de corte de tarjeta." unless cycle_end_day
 
-  reference_month = parsed_date.day > cycle_end_day ? parsed_date.month : (parsed_date - 1.month).month
-  cycle_end_date = Date.new(parsed_date.year, reference_month, cycle_end_day) rescue nil
-  return false unless cycle_end_date
+    reference_month = parsed_date.day > cycle_end_day ? parsed_date.month : (parsed_date - 1.month).month
+    cycle_end_date = Date.new(parsed_date.year, reference_month, cycle_end_day) rescue nil
+    return false unless cycle_end_date
 
-  due_date = @user.setting.payment_due_date_for(cycle_end_date)
-  parsed_date.between?(cycle_end_date, due_date)
-end
-
+    due_date = @user.setting.payment_due_date_for(cycle_end_date)
+    parsed_date.between?(cycle_end_date, due_date)
+  end
 end

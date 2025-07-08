@@ -1,3 +1,5 @@
+<!-- • ●-->
+
 <div class="sidebar-custom">
   <button id="closeSidebar" class="btn btn-sm btn-light d-md-none mb-3" style="padding: 4px 8px; font-size: 1.2rem;">
   &#9776;
@@ -25,6 +27,7 @@
   <%= link_to dashboard_path, class: "sidebar-link #{'active' if current_page?(dashboard_path)}" do %>
     <%= image_tag "dashboard.svg", class: "sidebar-icon" %> Dashboard
   <% end %>
+
   <%= link_to transactions_path, class: "sidebar-link #{'active' if current_page?(transactions_path)}", data: { turbo: false } do %>
   <%= image_tag "Transacciones.svg", class: "sidebar-icon" %> Transacciones
 <% end %>
@@ -32,12 +35,21 @@
   <%= link_to balance_payments_path, class: "sidebar-link #{'active' if current_page?(balance_payments_path)}" do %>
     <%= image_tag "Pagos.svg", class: "sidebar-icon" %> Pagos y reembolsos
   <% end %>
+
   <%= link_to categories_path, class: "sidebar-link #{'active' if current_page?(categories_path)}" do %>
     <%= image_tag "Categorias.svg", class: "sidebar-icon" %> Categorías
   <% end %>
+
   <%= link_to empresas_path, class: "sidebar-link #{'active' if current_page?(empresas_path)}" do %>
-    <%= image_tag "Empresas.svg", class: "sidebar-icon" %> Empresas
+  <%= image_tag "Empresas.svg", class: "sidebar-icon" %> Empresas
+
+  <% if highlight_empresas %>
+    <span class="ms-2" style="color: red; font-size: 0.7rem;">●</span>
+    <% else %>
+    <span class="ms-2" style="color: green; font-size: 0.7rem;">●</span>
   <% end %>
+<% end %>
+
   <%= link_to import_path, class: "sidebar-link #{'active' if current_page?(import_path)}" do %>
     <%= image_tag "Importar.svg", class: "sidebar-icon" %> Importar EDC
   <% end %>

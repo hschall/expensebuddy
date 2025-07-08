@@ -1,0 +1,45 @@
+<h3>Descripciones de <%= @empresa.descripcion %> (RFC: <%= @empresa.identificador %>)</h3>
+
+<%= form_with url: update_all_empresa_empresa_descriptions_path(@empresa), method: :post, local: true do %>
+  <div class="container-fluid p-0 mt-3">
+    <table class="table table-sm table-hover table-striped text-center align-middle mb-0" id="descriptions_table">
+      <thead class="sticky-top">
+        <tr style="height: 60px;">
+          <th><%= check_box_tag "select_all", "", false, id: "select_all_checkbox" %></th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @empresa_descriptions.each do |desc| %>
+          <tr style="height: 55px;">
+            <td><%= check_box_tag "description_ids[]", desc.id, false, class: "description-checkbox" %></td>
+            <td><%= desc.description %></td>
+            <td>
+              <%= select_tag "descriptions[#{desc.id}][category_id]",
+                  options_from_collection_for_select(@categories, :id, :name, desc.category_id),
+                  include_blank: true,
+                  class: "form-select form-select-sm",
+                  style: "font-size: 0.75rem;" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= submit_tag "Guardar cambios", class: "btn btn-primary btn-sm mt-3" %>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectAll = document.getElementById("select_all_checkbox");
+    const checkboxes = document.querySelectorAll(".description-checkbox");
+
+    if (selectAll) {
+      selectAll.addEventListener("change", () => {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      });
+    }
+  });
+</script>

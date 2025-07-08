@@ -51,62 +51,98 @@ def batch_create
   all_cycles = (transactions_data.map { |tx| tx["cycle_month"] } +
                 payments_data.map { |bp| bp["cycle_month"] }).uniq.compact
 
+  # ✅ Step 1: Delete existing data for these cycles (same as before)
   adapter = ActiveRecord::Base.connection.adapter_name.downcase
   cycle_end_day = current_user.setting&.cycle_end_day || 6
 
   all_cycles.each do |cycle_month|
     if adapter.include?("sqlite")
-  year, month = cycle_month.split("-").map(&:to_i)
-  cycle_start = Date.new(year, month, cycle_end_day + 1)
-  cycle_end = (cycle_start + 1.month) - 1
+      year, month = cycle_month.split("-").map(&:to_i)
+      cycle_start = Date.new(year, month, cycle_end_day + 1)
+      cycle_end = (cycle_start + 1.month) - 1
 
-  # Old version (risk of deleting everyone’s data)
-  # current_user.transactions.where(date: cycle_start..cycle_end).delete_all
-
-  # ✅ Correct version: only delete current_user's records in that date range
-  current_user.transactions.where(date: cycle_start..cycle_end).delete_all
-else
-  # ✅ Only delete current_user's transactions in that cycle
-  current_user.transactions.where("to_char(date, 'YYYY-MM') = ?", cycle_month).delete_all
-end
-
-# ✅ Same for balance payments
-current_user.balance_payments.where(cycle_month: cycle_month).delete_all
-
-  end
-
-  # Ensure user-scoped fallback category
-  default_category = current_user.categories.find_or_create_by!(name: "Sin categoría")
-
-transactions_data.each do |tx|
-  matching_empresa =
-    if tx["company_code"].present?
-      current_user.empresas.find_by(identificador: tx["company_code"])
+      current_user.transactions.where(date: cycle_start..cycle_end).delete_all
     else
-      current_user.empresas.where("identificador LIKE ?", "Sin identificador%")
-                   .find_by(descripcion: tx["description"])
+      current_user.transactions.where("to_char(date, 'YYYY-MM') = ?", cycle_month).delete_all
     end
 
-  # Only assign category if it belongs to current user
-  category = matching_empresa&.category
-category = nil unless category&.user_id == current_user.id
-category ||= default_category
+    current_user.balance_payments.where(cycle_month: cycle_month).delete_all
+  end
 
-current_user.transactions.create!(
-  date: tx["date"],
-  description: tx["description"],
-  person: tx["person"],
-  amount: tx["amount"],
-  company_code: tx["company_code"],
-  country: tx["country"],
-  transaction_type: tx["amount"].to_f < 0 ? "income" : "expense",
-  category: category,
-  cycle_month: tx["cycle_month"]
-)
+  # ✅ Step 2: Create missing Empresas
+  default_category = current_user.categories.find_or_create_by!(name: "Sin categoría")
+  existing_empresas = current_user.empresas.pluck(:identificador, :descripcion)
+  existing_identificadores = existing_empresas.map(&:first).compact
+  existing_descripciones = existing_empresas.map(&:second).compact.map(&:downcase)
 
-end
+  # A. Create Empresas with RFC
+  new_company_codes = transactions_data.map { |tx| tx["company_code"] }.compact.uniq - existing_identificadores
+  new_company_codes.each do |code|
+    description = transactions_data.find { |tx| tx["company_code"] == code }["description"]
+    current_user.empresas.create!(
+      identificador: code,
+      descripcion: description.to_s.strip,
+      category_id: default_category.id
+    )
+  end
 
+  # B. Create Empresas without RFC (by description)
+  no_rfc_descriptions = transactions_data
+                          .select { |tx| tx["company_code"].blank? }
+                          .map { |tx| tx["description"].to_s.strip }
+                          .uniq
+                          .reject { |desc| existing_descripciones.include?(desc.downcase) }
 
+  no_rfc_descriptions.each do |desc|
+    unique_hash = Digest::MD5.hexdigest(desc)[0..6]
+    current_user.empresas.create!(
+      identificador: "Sin identificador - #{unique_hash}",
+      descripcion: desc,
+      category_id: default_category.id
+    )
+  end
+
+  # ✅ Step 3: Create EmpresaDescriptions for each empresa + description
+  current_user.empresas.find_each do |empresa|
+    existing_descs = empresa.empresa_descriptions.pluck(:description).map(&:downcase)
+    empresa_category = empresa.category_id.presence || default_category.id
+
+    related_descriptions = transactions_data
+                             .select { |tx| tx["company_code"].to_s == empresa.identificador.to_s || (empresa.identificador.start_with?("Sin identificador") && tx["company_code"].blank? && tx["description"].to_s.strip.casecmp?(empresa.descripcion)) }
+                             .map { |tx| tx["description"].to_s.strip }
+                             .uniq
+
+    related_descriptions.reject { |desc| existing_descs.include?(desc.downcase) }.each do |desc|
+      empresa.empresa_descriptions.create!(
+        description: desc,
+        category_id: empresa_category
+      )
+    end
+  end
+
+  # ✅ Step 4: Create Transactions
+  transactions_data.each do |tx|
+    matching_empresa = current_user.empresas.find_by(identificador: tx["company_code"]) ||
+                       current_user.empresas.find_by(descripcion: tx["description"].to_s.strip)
+
+    category = matching_empresa&.category
+    category = nil unless category&.user_id == current_user.id
+    category ||= default_category
+
+    current_user.transactions.create!(
+      date: tx["date"],
+      description: tx["description"],
+      person: tx["person"],
+      amount: tx["amount"],
+      company_code: tx["company_code"],
+      country: tx["country"],
+      transaction_type: tx["amount"].to_f < 0 ? "income" : "expense",
+      category: category,
+      cycle_month: tx["cycle_month"]
+    )
+  end
+
+  # ✅ Step 5: Create Balance Payments (no changes)
   payments_data.each do |payment|
     current_user.balance_payments.create!(
       date: payment["date"],
@@ -122,10 +158,6 @@ end
   total = transactions_data.count + payments_data.count
   redirect_to dashboard_path, notice: "Se actualizaron #{all_cycles.size} ciclos con un total de #{total} registros."
 end
-
-
-
-
 
 
 

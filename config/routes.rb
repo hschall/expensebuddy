@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'empresa_descriptions/index'
+  get 'empresa_descriptions/update_all'
 
 devise_for :users, controllers: {
   registrations: "users/registrations"
@@ -45,18 +47,25 @@ end
 
   resources :categories, except: [:show]
 
-  resources :empresas, only: [:index, :edit, :update, :destroy] do
-    collection do
-      post :update_all_transaction_categories
-      post :import_from_transactions
-      post :save_all 
-      delete :delete_selected
-    end
+resources :empresas, only: [:index, :edit, :update, :destroy] do
+  collection do
+    post :update_all_transaction_categories
+    post :import_from_transactions
+    post :save_all
+    delete :delete_selected
+  end
 
-    member do
-      patch :update_inline
+  member do
+    patch :update_inline
+  end
+
+  resources :empresa_descriptions, only: [:index] do
+    collection do
+      post :update_all
     end
   end
+end
+
 
 
 resource :settings, only: [:edit, :update]

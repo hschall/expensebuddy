@@ -293,3 +293,37 @@
   object-fit: contain;     /* Keeps image inside without stretching */
 }
 
+
+.estado-tag {
+  font-weight: bold;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Optional: Customize colors if needed */
+.bg-incompleto    { background-color: #e35b5b !important; }  /* Incompleto */
+.bg-categorizado { background-color: #66c4a6 !important; }  /* Categorizado */
+.bg-sincat  { background-color: #b1b1b1 !important; }  /* Sin Categoria */
+
+
+th, th a {
+  color: black !important;
+}
+
+
+.select-no-arrow {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 1.5rem; /* adjust for spacing */
+  background-image: none !important;
+}
+
+
+.dashboard-card {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}

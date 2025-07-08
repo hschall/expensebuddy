@@ -1,0 +1,2 @@
+module EmpresaDescriptionsHelper
+end

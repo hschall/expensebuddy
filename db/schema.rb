@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_20_190200) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_02_052318) do
   create_table "balance_payments", force: :cascade do |t|
     t.date "date"
     t.decimal "amount"
@@ -34,6 +34,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_20_190200) do
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
+  create_table "empresa_descriptions", force: :cascade do |t|
+    t.integer "empresa_id", null: false
+    t.string "description", null: false
+    t.integer "category_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_empresa_descriptions_on_category_id"
+    t.index ["empresa_id", "description"], name: "index_empresa_descriptions_on_empresa_id_and_description", unique: true
+    t.index ["empresa_id"], name: "index_empresa_descriptions_on_empresa_id"
+  end
+
   create_table "empresas", force: :cascade do |t|
     t.string "identificador"
     t.string "descripcion"
@@ -41,6 +52,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_20_190200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.string "categorization_status", default: "consistent", null: false
     t.index ["user_id", "descripcion"], name: "index_empresas_on_user_id_and_descripcion", unique: true
     t.index ["user_id", "identificador"], name: "index_empresas_on_user_id_and_identificador", unique: true
     t.index ["user_id"], name: "index_empresas_on_user_id"
@@ -87,6 +99,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_20_190200) do
 
   add_foreign_key "balance_payments", "users"
   add_foreign_key "categories", "users"
+  add_foreign_key "empresa_descriptions", "categories"
+  add_foreign_key "empresa_descriptions", "empresas"
   add_foreign_key "empresas", "users"
   add_foreign_key "settings", "users"
   add_foreign_key "transactions", "categories"
