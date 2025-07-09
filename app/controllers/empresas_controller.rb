@@ -180,7 +180,7 @@ end
     end
 
     if total_new >= 1
-      redirect_to empresas_path(categoria_filter: "sin"), notice: "#{total_new} nuevas empresas agregadas."
+      redirect_to empresas_path, notice: "#{total_new} nuevas empresas agregadas."
     else
       redirect_to empresas_path, notice: "No se encontraron nuevas empresas por importar."
     end
