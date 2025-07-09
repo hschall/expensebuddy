@@ -103,13 +103,18 @@ end
   end
 
   def delete_selected
-    if params[:empresa_ids].present?
-      current_user.empresas.where(id: params[:empresa_ids]).destroy_all
-      redirect_to empresas_path, notice: "Empresas eliminadas correctamente."
-    else
-      redirect_to empresas_path, alert: "No seleccionaste ninguna empresa."
-    end
+  if params[:empresa_ids].present?
+    current_user.empresas.where(id: params[:empresa_ids]).destroy_all
+
+    # Immediately re-apply transaction categorization
+    apply_strict_transaction_categorization!
+
+    redirect_to empresas_path, notice: "Empresas eliminadas correctamente y transacciones actualizadas."
+  else
+    redirect_to empresas_path, alert: "No seleccionaste ninguna empresa."
   end
+end
+
 
   def import_from_transactions
     existing_identifiers = current_user.empresas.pluck(:identificador)

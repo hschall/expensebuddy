@@ -4,9 +4,18 @@ class SaldoHistoryGenerator
     @cycle_end_day = user.setting&.cycle_end_day || 6
   end
 
+  # ✅ New method to generate saldo for ALL user cycles
+  def generate_for_all_cycles!
+    all_cycles = (
+      @user.transactions.pluck(:cycle_month) +
+      @user.balance_payments.pluck(:cycle_month)
+    ).uniq.compact.sort
+
+    generate_for_cycles(all_cycles)
+  end
+
   def generate_for_cycles(cycles)
     previous_cycle_saldo = 0
-
     sorted_cycles = cycles.sort
 
     sorted_cycles.each do |cycle_month|
@@ -23,13 +32,13 @@ class SaldoHistoryGenerator
       previous_negative = previous_cycle_transactions.where("amount < 0").sum(:amount).to_f
       previous_total_balance = previous_positive + previous_negative
 
-      current_cycle_balance_payments = @user.balance_payments.where(cycle_month: cycle_month).sum(:amount).to_f
       db_previous_saldo = @user.saldo_histories.find_by(cycle_month: previous_cycle_month)&.saldo
       previous_saldo_to_use = db_previous_saldo.nil? ? previous_cycle_saldo : db_previous_saldo
 
       saldo = if previous_total_balance.zero?
                 0
               else
+                previous_total_balance + current_cycle_balance_payments = @user.balance_payments.where(cycle_month: cycle_month).sum(:amount).to_f
                 previous_total_balance + current_cycle_balance_payments + previous_saldo_to_use
               end
 
