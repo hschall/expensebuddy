@@ -56,15 +56,8 @@ def batch_create
   cycle_end_day = current_user.setting&.cycle_end_day || 6
 
   all_cycles.each do |cycle_month|
-    if adapter.include?("sqlite")
-      year, month = cycle_month.split("-").map(&:to_i)
-      cycle_start = Date.new(year, month, cycle_end_day + 1)
-      cycle_end = (cycle_start + 1.month) - 1
+    current_user.transactions.where(cycle_month: cycle_month).delete_all
 
-      current_user.transactions.where(date: cycle_start..cycle_end).delete_all
-    else
-      current_user.transactions.where("to_char(date, 'YYYY-MM') = ?", cycle_month).delete_all
-    end
 
     current_user.balance_payments.where(cycle_month: cycle_month).delete_all
   end
