@@ -97,21 +97,25 @@ def batch_create
 
   # ✅ Step 3: Create EmpresaDescriptions for each empresa + description
   current_user.empresas.find_each do |empresa|
-    existing_descs = empresa.empresa_descriptions.pluck(:description).map(&:downcase)
-    empresa_category = empresa.category_id.presence || default_category.id
+  # ✅ Skip creating descriptions for empresas without RFC
+  next if empresa.identificador.start_with?("Sin identificador")
 
-    related_descriptions = transactions_data
-                             .select { |tx| tx["company_code"].to_s == empresa.identificador.to_s || (empresa.identificador.start_with?("Sin identificador") && tx["company_code"].blank? && tx["description"].to_s.strip.casecmp?(empresa.descripcion)) }
-                             .map { |tx| tx["description"].to_s.strip }
-                             .uniq
+  existing_descs = empresa.empresa_descriptions.pluck(:description).map(&:downcase)
+  empresa_category = empresa.category_id.presence || default_category.id
 
-    related_descriptions.reject { |desc| existing_descs.include?(desc.downcase) }.each do |desc|
-      empresa.empresa_descriptions.create!(
-        description: desc,
-        category_id: empresa_category
-      )
-    end
+  related_descriptions = transactions_data
+                           .select { |tx| tx["company_code"].to_s == empresa.identificador.to_s }
+                           .map { |tx| tx["description"].to_s.strip }
+                           .uniq
+
+  related_descriptions.reject { |desc| existing_descs.include?(desc.downcase) }.each do |desc|
+    empresa.empresa_descriptions.create!(
+      description: desc,
+      category_id: empresa_category
+    )
   end
+end
+
 
   # ✅ Step 4: Create Transactions
   transactions_data.each do |tx|

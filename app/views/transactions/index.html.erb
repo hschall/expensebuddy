@@ -48,7 +48,7 @@
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
     <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap">
-      <%= link_to "Nueva Transacción", new_transaction_path, class: "btn-custom-primary-sm me-2" %>
+      <%#= link_to "Nueva Transacción", new_transaction_path, class: "btn-custom-primary-sm me-2" %>
       <%= submit_tag "Guardar cambios", class: "btn-custom-save-sm me-2", data: { action: "guardar" } %>
       <%= submit_tag "Eliminar seleccionadas", class: "btn-custom-danger-sm", data: { action: "eliminar" } %>
     </div>
