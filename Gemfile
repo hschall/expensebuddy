@@ -1,10 +1,9 @@
 source "https://rubygems.org"
 
-ruby "3.3.3"
+ruby "3.4.7"
 
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 gem "sprockets-rails"
-gem "sqlite3", ">= 1.4"
 gem "puma", ">= 5.0"
 gem "importmap-rails"
 gem "turbo-rails"
@@ -13,6 +12,7 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 gem 'roo'
+gem "csv"   # Ruby 3.4+: csv moved out of stdlib; roo requires it
 gem "groupdate"
 gem "chartkick"
 gem "digest"
